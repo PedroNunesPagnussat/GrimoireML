@@ -16,11 +16,11 @@ def cost_function_derivative(y_hat, y):
     return y_hat - y 
 
 
-DATA = np.array([
-    np.array([0.5, 0.2]),
-    np.array([0.1, 0.6]),
-    np.array([0.7, 0.8])
-], dtype=object).T
+DATA_PATH = "data.csv"
+DATA = np.loadtxt("data.csv",
+                 delimiter=",", dtype=float, skiprows=1)
+
+
 
 NEURON_NUMBERS = np.array([2, 3, 1])
 
@@ -45,6 +45,17 @@ WEIGTHS = np.array(
 
 EPOCHS = 1
 LR = 0.01
+
+def foward_pass():
+    pass
+
+def backward_pass():
+    pass
+
+def train(EPOCHS=1, LR=0.01, BATCH_SIZE=1):
+    for epoch in EPOCHS:
+        pass
+            
 
 
 for epoch in range(EPOCHS):
@@ -96,4 +107,4 @@ for epoch in range(EPOCHS):
         for i in range(len(WEIGTHS)):
             WEIGTHS[i] -= LR * GRADS[i]
             
-        print(WEIGTHS)        
+print(WEIGTHS)
