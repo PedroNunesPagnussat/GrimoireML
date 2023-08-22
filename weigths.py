@@ -18,5 +18,6 @@ WEIGHTS = np.array(
     ], dtype=object
 )
 
+print(WEIGHTS)
 # Salvando os pesos em um arquivo
 np.save('weights.npy', WEIGHTS)

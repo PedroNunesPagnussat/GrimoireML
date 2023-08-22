@@ -15,6 +15,15 @@ def cost_function(y_hat, y):
 def cost_function_derivative(y_hat, y):
     return y_hat - y 
 
+def verify_shapes(weights):
+    for i, layer in enumerate(weights):
+        if i == 0:
+            assert layer.shape[1] == weights[0].shape[1]
+        elif i == len(weights) - 1:
+            assert layer.shape[0] == weights[-1].shape[0]
+        else:
+            assert layer.shape[1] == weights[i - 1].shape[0]
+    
 
 DATA_PATH = "data.csv"
 DATA = np.loadtxt("data.csv",
@@ -23,6 +32,10 @@ DATA = np.loadtxt("data.csv",
 NEURON_NUMBERS = np.array([2, 3, 1])
 
 WEIGTHS = np.load('weights.npy', allow_pickle=True)
+
+
+verify_shapes(WEIGTHS)
+exit()
 
 EPOCHS = 1
 LR = 0.01
