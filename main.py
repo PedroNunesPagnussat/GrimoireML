@@ -20,28 +20,9 @@ DATA_PATH = "data.csv"
 DATA = np.loadtxt("data.csv",
                  delimiter=",", dtype=float, skiprows=1)
 
-
-
 NEURON_NUMBERS = np.array([2, 3, 1])
 
-WEIGTHS = np.array(
-    [
-        # INPUT LAYER
-        np.array([
-            np.array([0.5, 0.2]),
-            np.array([0.6, -0.1]),
-            np.array([-0.4, -0.3])
-        ], dtype=object),
-
-
-        # HIDDEN LAYERS
-
-        # OUTPUT LAYER
-        np.array([
-            np.array([0.7, -0.1, 0.2]),
-        ], dtype=object)
-    ], dtype=object
-)
+WEIGTHS = np.load('weights.npy', allow_pickle=True)
 
 EPOCHS = 1
 LR = 0.01
