@@ -25,13 +25,13 @@ model = MLP()
 model.add(Input(INPUT_SHAPE))
 model.add(Dense(3, activation='relu'))
 model.add(Dense(OUTPUT_SHAPE, activation='sigmoid'))
-model.compile(loss=MSE(), optimizer=SGD())
+model.compile(loss="MSE", optimizer=SGD())
 
+model.fit(X, y, epochs=1, batch_size=2)
 """
 
 
 
-model.fit(X, y, epochs=1, batch_size=1)
 
 print(model.predict(X))
 

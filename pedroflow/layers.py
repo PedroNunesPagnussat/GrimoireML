@@ -14,31 +14,20 @@ class Layer(ABC):
     def __str__(self):
         pass
 
-    def get_activation_function(self, activation):
-        if type(activation) == str:
-            if activation == "sigmoid":
-                return activation_functions.sigmoid, activation_functions.sigmoid_derivative
-            
-            elif activation == "relu":
-                return activation_functions.relu, activation_functions.relu_derivative
-            
-        raise Exception("Invalid activation function")
-
-
         
 
 # Dense Layer inheriting from Layer
 class Dense(Layer):
     def __init__(self, neurons, activation):
         self.neurons = neurons
-        self.activation, self.activation_derivative = super().get_activation_function(activation)
+        self.activation, self.activation_derivative = activation_functions.get_activation_function(activation)
         self.weights = None
         self.biases = None
         self.output = None
         self.output_derivative = None
 
     def initialize_weights(self, input_shape):
-        self.weights = np.random.uniform(-1, 1, size=(input_shape, self.neurons)).T
+        self.weights = np.random.uniform(-1, 1, size=(input_shape, self.neurons))
     
     def initialize_biases(self):
         self.biases = np.random.uniform(-1, 1, size=(self.neurons,))

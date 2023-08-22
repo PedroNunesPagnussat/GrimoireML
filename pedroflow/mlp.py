@@ -1,4 +1,5 @@
 import numpy as np
+from pedroflow import loss_functions
 
 class MLP():
 
@@ -13,7 +14,7 @@ class MLP():
         self.layers = np.append(self.layers, layer)
     
     def compile(self, loss, optimizer):
-        self.loss = loss
+        self.loss, self.loss_derivative = loss_functions.get_loss_function(loss)
         self.optimizer = optimizer
 
         input_shape = self.layers[0].input_shape
@@ -24,6 +25,36 @@ class MLP():
 
 
     def fit(self, X, y, epochs=1, lr=0.01, batch_size=1):
+        for epoch in range(epochs):
+            print(f"Epoch {epoch + 1}/{epochs}")
+            for i in range(0, len(X), batch_size):
+
+                print(f"Batch {i + 1}/{len(X) // batch_size}")
+                batch_X = X[i:i+batch_size]
+                batch_y = y[i:i+batch_size]
+
+                # print(batch_X)
+                # print(batch_y)
+
+                y_pred = self.forward(batch_X)
+                print(y_pred)
+                gradients = self.backward(batch_y, y_pred)
+                # self.update(lr)
+
+    
+    def forward(self, X):
+        inputs = X
+        for layer in self.layers[1:]:
+            z = np.dot(inputs, layer.weights) + layer.biases
+            z = np.array(z, dtype=np.float)
+            layer.output = np.apply_along_axis(layer.activation, 1, z)  # Apply activation along the correct axis
+            layer.output_derivative = np.apply_along_axis(layer.activation_derivative, 1, layer.output)
+            inputs = layer.output
+
+        return inputs
+
+    
+    def backward(self, y_true, y_pred):
         pass
 
     def predict(self, X):

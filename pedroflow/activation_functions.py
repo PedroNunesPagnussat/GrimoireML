@@ -1,5 +1,20 @@
 import numpy as np  
 
+def get_activation_function(activation):
+    if type(activation) == str:
+        if activation == "sigmoid":
+            return sigmoid, sigmoid_derivative
+        elif activation == "relu":
+            return relu, relu_derivative
+        elif activation == "tanh":
+            return tanh, tanh_derivative
+        elif activation == "softmax":
+            return softmax, softmax_derivative
+
+
+        
+    raise Exception("Invalid activation function")
+
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
@@ -10,10 +25,8 @@ def relu(x):
     return np.maximum(0, x)
 
 def relu_derivative(x):
-    if x > 0:
-        return 1
-    else:
-        return 0
+    return np.where(x > 0, 1, 0)
+
 
 def tanh(x):
     return np.tanh(x)
