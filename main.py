@@ -1,4 +1,5 @@
 import numpy as np
+np.random.seed(42)
 
 def sigmoid(s_list):
     temp = np.array([])
@@ -15,7 +16,7 @@ def cost_function(y_hat, y):
 def cost_function_derivative(y_hat, y):
     return y_hat - y 
 
-def verify_shapes(weights):
+def verify_weights(weights):
     for i, layer in enumerate(weights):
         if i == 0:
             assert layer.shape[1] == weights[0].shape[1]
@@ -23,18 +24,40 @@ def verify_shapes(weights):
             assert layer.shape[0] == weights[-1].shape[0]
         else:
             assert layer.shape[1] == weights[i - 1].shape[0]
-    
+
+def random_weights(NEURON_NUMBERS):
+    weights = np.empty(len(NEURON_NUMBERS) - 1, dtype=object)
+    for i in range(len(NEURON_NUMBERS) - 1):
+        # Number of neurons in the current layer
+        current_N = NEURON_NUMBERS[i]
+
+        # Number of neurons in the next layer
+        next_M = NEURON_NUMBERS[i + 1]
+
+        # Initialize weights for the current layer with random values between -1 and 1
+        layer_weights = np.random.uniform(-1, 1, size=(current_N, next_M)).T
+
+        # Add the weights to the array
+        weights[i] = layer_weights
+
+    return weights
 
 DATA_PATH = "data.csv"
 DATA = np.loadtxt("data.csv",
                  delimiter=",", dtype=float, skiprows=1)
 
-NEURON_NUMBERS = np.array([2, 3, 1])
+read_weights = False
 
-WEIGTHS = np.load('weights.npy', allow_pickle=True)
+if read_weights:
+    WEIGHTS = np.load('weights.npy', allow_pickle=True)
+    verify_weights(WEIGHTS)
+
+else:
+    NEURONS = np.array([2, 3, 1])
+    WEIGHTS = random_weights(NEURONS)
 
 
-verify_shapes(WEIGTHS)
+print(WEIGHTS)
 exit()
 
 EPOCHS = 1
@@ -62,7 +85,7 @@ for epoch in range(EPOCHS):
         X, y = data[:-1].T, data[-1]
 
         # FORWARD PASS
-        for i, layer in enumerate(WEIGTHS):
+        for i, layer in enumerate(WEIGHTS):
             if i == 0:
                 o = sigmoid(np.dot(layer, X))
             else:
@@ -76,18 +99,18 @@ for epoch in range(EPOCHS):
         LOSS_LIST = np.append(LOSS_LIST, loss)
 
         # BACKWARD PASS
-        for i, layer in reversed(list(enumerate(WEIGTHS))):
-            if i == len(WEIGTHS) - 1:
+        for i, layer in reversed(list(enumerate(WEIGHTS))):
+            if i == len(WEIGHTS) - 1:
                 delta = cost_function_derivative(HIDDEN_ACTIVATIONS[i], y) * sigmoid_derivative(HIDDEN_ACTIVATIONS[i])
             else:
-                delta = np.dot(WEIGTHS[i + 1].T, DELTAS[-1]) * sigmoid_derivative(HIDDEN_ACTIVATIONS[i])
+                delta = np.dot(WEIGHTS[i + 1].T, DELTAS[-1]) * sigmoid_derivative(HIDDEN_ACTIVATIONS[i])
 
 
             DELTAS.append(delta)
         DELTAS = np.flip(DELTAS)
 
 
-        for i in range(len(WEIGTHS)):
+        for i in range(len(WEIGHTS)):
 
             if i == 0:
                 grad = np.dot(DELTAS[0].reshape(-1, 1), X.reshape(1, -1)) 
@@ -98,7 +121,7 @@ for epoch in range(EPOCHS):
 
         # Adjust weights
 
-        for i in range(len(WEIGTHS)):
-            WEIGTHS[i] -= LR * GRADS[i]
+        for i in range(len(WEIGHTS)):
+            WEIGHTS[i] -= LR * GRADS[i]
             
-print(WEIGTHS)
+print(WEIGHTS)
