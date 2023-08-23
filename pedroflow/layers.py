@@ -24,7 +24,9 @@ class Dense(Layer):
         self.weights = None
         self.biases = None
         self.output = None
-        self.output_derivative = None
+        self.delta = None
+
+        # self.output_derivative = None
 
     def initialize_weights(self, input_shape):
         self.weights = np.random.uniform(-1, 1, size=(input_shape, self.neurons))
@@ -44,6 +46,7 @@ class Dense(Layer):
 
 class Input(Layer):
     def __init__(self, input_shape):
+        self.output = None
         self.input_shape = input_shape
         
 

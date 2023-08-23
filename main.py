@@ -15,6 +15,8 @@ DATA = np.loadtxt(DATA_PATH, delimiter=",", dtype=float, skiprows=1)
 
 X, y = DATA[:, :-1], DATA[:, -1]
 
+
+
 INPUT_SHAPE = X.shape[1]
 OUTPUT_SHAPE = 1
 
@@ -27,7 +29,12 @@ model.add(Dense(3, activation='relu'))
 model.add(Dense(OUTPUT_SHAPE, activation='sigmoid'))
 model.compile(loss="MSE", optimizer=SGD())
 
-model.fit(X, y, epochs=1, batch_size=2)
+model.fit(X, y, epochs=100, lr = 0.5, batch_size=1)
+
+out = model.predict(X)
+
+print(out)
+
 """
 
 
