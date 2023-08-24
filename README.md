@@ -1,41 +1,44 @@
-# Multi-Layer Perceptron (MLP) from Scratch
+# GrimoireML
 
-This project implements a simple Multi-Layer Perceptron (MLP) from scratch using NumPy. It includes functions for the sigmoid activation, its derivative, a mean squared error cost function, and its derivative. The code covers forward and backward passes through the neural network and updates the weights using calculated gradients.
+GrimoireML is an open-source side project aimed at exploring and experimenting with machine learning and data science. It's a playground for enthusiasts, learners, and anyone interested in diving into the world of data. Feel free to explore, contribute, or just have fun with it!
 
-## Overview
 
-The code consists of the following main components:
+## Installation
 
-- **Activation Functions**: Sigmoid activation function along with its derivative.
-- **Cost Function**: Mean squared error cost function and its derivative.
-- **Forward Pass**: Calculation of activations for the hidden layers using the sigmoid activation function.
-- **Backward Pass**: Calculation of gradients using the chain rule, activation, and cost function derivatives.
-- **Weight Update**: Update of the weights using the calculated gradients and a learning rate.
+You can clone the repository and install GrimoireML locally:
 
-## Usage
+```bash
+git clone https://github.com/PedroNunesPagnussat/grimoireml.git
+```
 
-1. **Data Initialization**: Define the input data and target values as NumPy arrays.
-2. **Network Configuration**: Set the neuron numbers for each layer and initial weights.
-3. **Training Parameters**: Define the number of epochs and learning rate for training.
-4. **Run Training Loop**: The training loop will run through the specified number of epochs, performing forward and backward passes, calculating the loss, and updating the weights.
+## Using
 
-## Code Structure
+```python
+import grimoireml as gml
 
-- `sigmoid(s)`: Sigmoid activation function.
-- `sigmoid_derivative(x)`: Derivative of the sigmoid activation function.
-- `cost_function(y_hat, y)`: Mean squared error cost function.
-- `cost_function_derivative(y_hat, y)`: Derivative of the mean squared error cost function.
-- `DATA`: Input data and target values.
-- `NEURON_NUMBERS`: Number of neurons in each layer.
-- `WEIGTHS`: Initial weights for the network.
-- `EPOCHS`: Number of epochs for training.
-- `LR`: Learning rate.
+# Now you can use the 'gml' alias to access GrimoireML's functions and classes
+```
 
-## Requirements
+## Contributing
 
-- Python 3.x
-- NumPy
+Want to contribute? Great! Feel free to fork the project, make your changes, and submit a pull request. Check out [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## License
 
-This project is open-source and available under the MIT License.
+GrimoireML is licensed under the MIT License
+## Support
+
+Do you have any questions or run into issues? Open an issue on our [GitHub repository](https://github.com/PedroNunesPagnussat/grimoireml).
+
+## Acknowledgements
+
+A big shoutout to everyone who has played around with GrimoireML, shared ideas or contributed in any way.
+
+### Inspiration
+
+GrimoireML draws heavy inspiration from well-established machine learning libraries such as [scikit-learn](https://scikit-learn.org/) and [TensorFlow](https://www.tensorflow.org/). The design principles, algorithms, and overall approach are influenced by these pioneering projects. We encourage users to explore these libraries as well, and we express our gratitude to the developers and contributors of scikit-learn and TensorFlow for their work in the field of machine learning.
+
+
+---
+
+Enjoy experimenting with GrimoireML!
