@@ -1,7 +1,7 @@
 import numpy as np
-from pedroflow import loss_functions
+from grimoireml.functions import loss_functions
 
-class MLP():
+class Sequential():
 
     def __init__(self) -> None:
         self.loss = None

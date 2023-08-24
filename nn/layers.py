@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from pedroflow import activation_functions
+from grimoireml.functions import activation_functions
 # import loss_functions
 
 
