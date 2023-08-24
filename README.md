@@ -11,7 +11,7 @@ You can clone the repository and install GrimoireML locally:
 git clone https://github.com/PedroNunesPagnussat/grimoireml.git
 ```
 
-## Using
+## Importing
 
 ```python
 import grimoireml as gml
