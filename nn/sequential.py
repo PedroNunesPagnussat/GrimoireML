@@ -37,13 +37,13 @@ class Sequential():
                 batch_y = y[i:i+batch_size]
 
 
-                y_pred = self.forward(self.layers[0].output)
-                self.backward(batch_y, y_pred)
-                self.update(lr)
+                y_pred = self.__forward(self.layers[0].output)
+                self.__backward(batch_y, y_pred)
+                self.__update(lr)
 
 
     
-    def forward(self, X):
+    def __forward(self, X):
         inputs = X
         for layer in self.layers[1:]:
             z = np.dot(inputs, layer.weights) + layer.biases
@@ -55,7 +55,7 @@ class Sequential():
         return inputs
 
     
-    def backward(self, y_true, y_pred):
+    def __backward(self, y_true, y_pred):
         y_true = y_true.reshape(y_pred.shape)
         error = self.loss_derivative(y_true, y_pred)
 
@@ -73,7 +73,7 @@ class Sequential():
             layer.delta = error * np.apply_along_axis(layer.activation_derivative, 1, layer.output)
 
 
-    def compute_gradients(self):
+    def __compute_gradients(self):
         gradients = []
 
         for i, layer in enumerate(self.layers[1:]):
@@ -89,8 +89,8 @@ class Sequential():
         # Return the gradients in the correct order (from input to output layers)
         return gradients
     
-    def update(self, lr):
-        gradients = self.compute_gradients()
+    def __update(self, lr):
+        gradients = self.__compute_gradients()
         for i, (weight_gradients, bias_gradients) in enumerate(gradients, start=1):
             layer = self.layers[i]
 
