@@ -1,41 +1,48 @@
-import numpy as np  
+import numpy as np
 
 def get_activation_function(activation):
-    if type(activation) == str:
-        if activation == "sigmoid":
-            return sigmoid, sigmoid_derivative
-        elif activation == "relu":
-            return relu, relu_derivative
-        elif activation == "tanh":
-            return tanh, tanh_derivative
-        elif activation == "softmax":
-            return softmax, softmax_derivative
-
-
-        
+    """Return activation function and its derivative based on input string."""
+    if activation == "sigmoid":
+        return _sigmoid, _sigmoid_derivative
+    elif activation == "relu":
+        return _relu, _relu_derivative
+    elif activation == "tanh":
+        return _tanh, _tanh_derivative
+    elif activation == "softmax":
+        return _softmax, _softmax_derivative
     raise Exception("Invalid activation function")
 
-def sigmoid(x):
+def _sigmoid(x):
+    """Apply sigmoid function to input array."""
     return 1 / (1 + np.exp(-x))
 
-def sigmoid_derivative(x):
-    return sigmoid(x) * (1 - sigmoid(x))
+def _sigmoid_derivative(x):
+    """Apply derivative of sigmoid function to input array."""
+    sx = _sigmoid(x)
+    return sx * (1 - sx)
 
-def relu(x):
+def _relu(x):
+    """Apply ReLU function to input array."""
     return np.maximum(0, x)
 
-def relu_derivative(x):
+def _relu_derivative(x):
+    """Apply derivative of ReLU function to input array."""
     return np.where(x > 0, 1, 0)
 
-
-def tanh(x):
+def _tanh(x):
+    """Apply tanh function to input array."""
     return np.tanh(x)
 
-def tanh_derivative(x):
+def _tanh_derivative(x):
+    """Apply derivative of tanh function to input array."""
     return 1 - np.tanh(x) ** 2
 
-def softmax(x):
-    return np.exp(x) / np.sum(np.exp(x), axis=1, keepdims=True)
+def _softmax(x):
+    """Apply softmax function to input array."""
+    exp_x = np.exp(x - np.max(x))
+    return exp_x / exp_x.sum(axis=1, keepdims=True)
 
-def softmax_derivative(x):
-    return softmax(x) * (1 - softmax(x))
+def _softmax_derivative(x):
+    """Apply derivative of softmax function to input array."""
+    s = _softmax(x)
+    return s * (1 - s)
