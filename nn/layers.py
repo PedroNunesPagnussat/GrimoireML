@@ -19,6 +19,7 @@ class Dense(Layer):
         self._activation, self._activation_derivative = activation_functions.get_activation_function(activation)
         self._weights = None
         self._biases = None
+        self._sum = None
         self._output = None
         self._delta = None
 
@@ -35,7 +36,7 @@ class Dense(Layer):
 class Input(Layer):
     def __init__(self, input_shape):
         """Initialize an input layer with a given shape."""
-        self._output = None
+        self._sum = None
         self._input_shape = input_shape
 
 
