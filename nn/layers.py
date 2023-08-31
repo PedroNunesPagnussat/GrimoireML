@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from grimoireml.functions import activation_functions
+from ..functions import activation_functions
 
 class Layer(ABC):
     @abstractmethod
@@ -36,7 +36,6 @@ class Dense(Layer):
 class Input(Layer):
     def __init__(self, input_shape):
         """Initialize an input layer with a given shape."""
-        self._sum = None
         self._input_shape = input_shape
 
 

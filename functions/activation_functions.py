@@ -23,7 +23,7 @@ def _sigmoid_derivative(x):
 
 def _relu(x):
     """Apply ReLU function to input array."""
-    return np.maximum(0, x)
+    return np.maximum(x, 0, out=x)
 
 def _relu_derivative(x):
     """Apply derivative of ReLU function to input array."""
