@@ -1,6 +1,6 @@
 # GrimoireML
 
-![logo](.\imgs\logo.png)
+<img src="https://github.com/PedroNunesPagnussat/GrimoireML/blob/a2f0a5d8fd47ec7734ea2e581f3f4a4e328a2140/imgs/logo.png" width="256">
 
 GrimoireML is an open-source side project aimed at exploring and experimenting with machine learning and data science. It's a playground for enthusiasts, learners, and anyone interested in diving into the world of data. Feel free to explore, contribute, or just have fun with it!
 
@@ -10,7 +10,7 @@ GrimoireML is an open-source side project aimed at exploring and experimenting w
 You can clone the repository and install GrimoireML locally:
 
 ```bash
-git clone https://github.com/PedroNunesPagnussat/grimoireml.git
+pip install grimoireml
 ```
 
 ## Importing
