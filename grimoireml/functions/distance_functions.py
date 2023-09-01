@@ -14,6 +14,7 @@ def get_distance_function(distance):
 def _euclidean_distance(x, y):
     """Calculate Euclidean distance between two vectors x and y."""
     # Using numpy's built-in function for efficiency
+
     return np.linalg.norm(x - y, axis=1)
 
 def _manhattan_distance(x, y):
