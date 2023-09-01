@@ -74,3 +74,12 @@ class DBSCAN():
     def _expand_cluster(self, point, neighbors):
         point.cluster = self.n_clusters
         point.visited = True
+
+        while len(neighbors) > 0:
+            n = neighbors.pop()
+            if not n.visited:
+                n.visited = True
+                n.cluster = self.n_clusters
+                new_neighbors = n.neighbors
+                if len(new_neighbors) > self._min_points:
+                    neighbors.extend(new_neighbors)
