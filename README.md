@@ -1,5 +1,7 @@
 # GrimoireML
 
+![logo](.\imgs\logo.png)
+
 GrimoireML is an open-source side project aimed at exploring and experimenting with machine learning and data science. It's a playground for enthusiasts, learners, and anyone interested in diving into the world of data. Feel free to explore, contribute, or just have fun with it!
 
 
