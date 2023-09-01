@@ -8,7 +8,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='grimoireml', 
-    version='0.0.0.1',  
+    version='0.0.0.1.1',  
     author='Pedro Pagnussat',
     author_email='grimoireml1@gmail.com', 
     description='A machine learning library',
@@ -29,3 +29,4 @@ setup(
         'scipy==1.7.3',   
     ],
     python_requires='>=3.6',  
+)
