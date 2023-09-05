@@ -14,6 +14,9 @@ def get_distance_function(distance: str) -> Callable[[np.ndarray, np.ndarray], n
     Raises:
         Exception: If an invalid distance function name is provided.
     """
+
+    if distance not in distance_map:
+        raise ValueError(f"Distance function {distance} not supported, supported distances are: {list(distance_map.keys())}")
     return distance_map[distance]
 
 def _euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.ndarray:

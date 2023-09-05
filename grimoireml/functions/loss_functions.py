@@ -14,13 +14,9 @@ def get_loss_function(loss: str) -> Tuple[Callable[[np.ndarray, np.ndarray], np.
     Raises:
         Exception: If an invalid loss function name is provided.
     """
-    if loss == "MSE":
-        return _mse, _mse_derivative
-    elif loss == "MAE":
-        return _mae, _mae_derivative
-    elif loss == "CrossEntropy":
-        return _cross_entropy, _cross_entropy_derivative
-    raise Exception("Invalid loss function")
+    if loss not in loss_map:
+        raise ValueError(f"Loss function {loss} not supported, supported losses are: {list(loss_map.keys())}")
+    return loss_map[loss]
 
 def _mse(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
     """

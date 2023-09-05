@@ -14,7 +14,8 @@ def get_activation_function(activation: str) -> Tuple[Callable[[np.ndarray], np.
         Tuple[Callable, Callable]: The activation function and its derivative.
         
     """
-
+    if activation not in activation_map:
+        raise ValueError(f"Activation function {activation} not supported, supported activations are: {list(activation_map.keys())}")
     return activation_map[activation] 
 
 def _sigmoid(x: np.ndarray) -> np.ndarray:

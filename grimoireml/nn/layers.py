@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Callable, Union
 import numpy as np
 from ..functions import activation_functions
+from .weight_initializers import get_initializer
 
 class Layer(ABC):
     """
@@ -37,7 +38,7 @@ class Dense(Layer):
         
     """
     
-    def __init__(self, neurons: int, activation: str):
+    def __init__(self, neurons: int, activation: str, initialaizer: str = "glorot_uniform", active_bias: bool = True):
         """
         Initialize a dense layer with neurons and activation function.
         
@@ -54,6 +55,7 @@ class Dense(Layer):
         self._delta = None
         self._weights_grad = None
         self._bias_grad = None
+        self._initializer = initialaizer
 
     def _initialize_weights_and_bias(self, input_shape: int):
         """
@@ -62,8 +64,10 @@ class Dense(Layer):
         Args:
             input_shape (int): The shape of the input data.
         """
-        self._weights = np.random.uniform(-1, 1, size=(input_shape, self._neurons))
+        initializer = get_initializer(self._initializer)
+        self._weights = initializer(input_shape, self._neurons)
         self._biases = np.random.uniform(-1, 1, size=(self._neurons,))
+
 
     def __str__(self) -> str:
         """
