@@ -1,6 +1,8 @@
 from typing import List, Union
 import numpy as np
 from ..functions import loss_functions
+from .optimizers import Optimizer
+from .layers import Layer
 
 class Sequential:
     def __init__(self):
@@ -10,7 +12,7 @@ class Sequential:
         self._optimizer = None
         self._layers = np.array([], dtype=object)
 
-    def add(self, layer: object) -> None:
+    def add(self, layer: Layer) -> None:
         """Add a layer to the model.
         
         Args:
@@ -18,7 +20,7 @@ class Sequential:
         """
         self._layers = np.append(self._layers, layer)
 
-    def compile(self, loss: str, optimizer: str) -> None:
+    def compile(self, loss: str, optimizer: Optimizer) -> None:
         """Compile the model by setting the loss function and optimizer.
         
         Args:
@@ -33,7 +35,7 @@ class Sequential:
             layer._initialize_weights_and_bias(input_shape)
             input_shape = layer._neurons
 
-    def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, lr: float = 0.01, batch_size: int = 1) -> None:
+    def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1) -> None:
         """Fit the model to the data.
         
         Args:
@@ -50,9 +52,13 @@ class Sequential:
             for i in range(0, len(X), batch_size):
                 self._layers[0]._output = X[i:i + batch_size]
                 batch_y = y[i:i + batch_size]
+                
                 y_pred = self._forward(self._layers[0]._output)
                 self._backward(batch_y, y_pred)
-                self._update(lr)
+                
+
+                self._compute_gradients()
+                self._optimizer._update(self._layers)
 
     def _forward(self, X: np.ndarray) -> np.ndarray:
         """Perform the forward pass.
@@ -94,25 +100,11 @@ class Sequential:
         Returns:
             A list of tuples containing weight and bias gradients for each layer.
         """
-        gradients = []
         for i, layer in enumerate(self._layers[1:]):
             prev_layer = self._layers[i]
-            weight_gradients = np.dot(prev_layer._output.T, layer._delta)
-            bias_gradients = np.sum(layer._delta, axis=0)
-            gradients.append((weight_gradients, bias_gradients))
-        return gradients
+            layer._weights_grad = np.dot(prev_layer._output.T, layer._delta)
+            layer._bias_grad = np.sum(layer._delta, axis=0)
 
-    def _update(self, lr: float) -> None:
-        """Update the weights and biases of all layers.
-        
-        Args:
-            lr: The learning rate.
-        """
-        gradients = self._compute_gradients()
-        for i, (weight_gradients, bias_gradients) in enumerate(gradients, start=1):
-            layer = self._layers[i]
-            layer._weights -= lr * weight_gradients
-            layer._biases -= lr * bias_gradients
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         """Make predictions based on the input data.

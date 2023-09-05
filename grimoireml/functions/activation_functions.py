@@ -1,6 +1,8 @@
 from typing import Callable, Tuple
 import numpy as np
 
+
+
 def get_activation_function(activation: str) -> Tuple[Callable[[np.ndarray], np.ndarray], Callable[[np.ndarray], np.ndarray]]:
     """
     Return activation function and its derivative based on input string.
@@ -11,18 +13,9 @@ def get_activation_function(activation: str) -> Tuple[Callable[[np.ndarray], np.
     Returns:
         Tuple[Callable, Callable]: The activation function and its derivative.
         
-    Raises:
-        Exception: If an invalid activation function name is provided.
     """
-    if activation == "sigmoid":
-        return _sigmoid, _sigmoid_derivative
-    elif activation == "relu":
-        return _relu, _relu_derivative
-    elif activation == "tanh":
-        return _tanh, _tanh_derivative
-    elif activation == "softmax":
-        return _softmax, _softmax_derivative
-    raise Exception("Invalid activation function")
+
+    return activation_map[activation] 
 
 def _sigmoid(x: np.ndarray) -> np.ndarray:
     """
@@ -122,3 +115,11 @@ def _softmax_derivative(x: np.ndarray) -> np.ndarray:
     """
     s = _softmax(x)
     return s * (1 - s)
+
+
+activation_map = {
+    "sigmoid" : (_sigmoid, _sigmoid_derivative),
+    "relu" : (_relu, _relu_derivative),
+    "tanh": (_tanh, _tanh_derivative),
+    "softmax" : (_softmax, _softmax_derivative)
+}

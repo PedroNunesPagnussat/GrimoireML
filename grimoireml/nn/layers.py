@@ -32,6 +32,9 @@ class Dense(Layer):
         _sum (np.ndarray): Weighted sum before activation.
         _output (np.ndarray): Output after activation.
         _delta (np.ndarray): Error term for backpropagation.
+        _weight_grad (np.ndarray): The gradient for the weigths.
+        _bias_grad (np.ndarray): The gradient for the Bias.
+        
     """
     
     def __init__(self, neurons: int, activation: str):
@@ -49,6 +52,8 @@ class Dense(Layer):
         self._sum = None
         self._output = None
         self._delta = None
+        self._weights_grad = None
+        self._bias_grad = None
 
     def _initialize_weights_and_bias(self, input_shape: int):
         """

@@ -6,7 +6,7 @@ def get_loss_function(loss: str) -> Tuple[Callable[[np.ndarray, np.ndarray], np.
     Return loss function and its derivative based on input.
     
     Args:
-        loss (str): The name of the loss function ("MSE", "MAE", "CrossEntropy").
+        loss (str): The name of the loss function ("MSE", "MAE").
         
     Returns:
         Tuple[Callable, Callable]: The loss function and its derivative.
@@ -89,17 +89,9 @@ def _cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
     y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
     return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
-def _cross_entropy_derivative(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
-    """
-    Compute derivative of Cross-Entropy Loss.
-    
-    Args:
-        y_true (np.ndarray): The true values.
-        y_pred (np.ndarray): The predicted values.
-        
-    Returns:
-        np.ndarray: The derivative of the Cross-Entropy Loss.
-    """
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-    return -(y_true / y_pred) + (1 - y_true) / (1 - y_pred)
+
+
+loss_map = {
+    "MSE" : (_mse, _mse_derivative),
+    "MAE" : (_mae, _mae_derivative)
+}

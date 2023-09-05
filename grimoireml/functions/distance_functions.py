@@ -14,13 +14,7 @@ def get_distance_function(distance: str) -> Callable[[np.ndarray, np.ndarray], n
     Raises:
         Exception: If an invalid distance function name is provided.
     """
-    if distance == "euclidean":
-        return _euclidean_distance
-    elif distance == "manhattan":
-        return _manhattan_distance
-    elif distance == "cosine":
-        return _cosine_similarity
-    raise Exception("Invalid distance function")
+    return distance_map[distance]
 
 def _euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     """
@@ -62,3 +56,10 @@ def _cosine_similarity(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     x_norm = np.linalg.norm(x)
     y_norm = np.linalg.norm(y, axis=1)
     return np.dot(y, x) / (y_norm * x_norm)
+
+
+distance_map = {
+    "euclidean" : _euclidean_distance,
+    "manhattan" : _manhattan_distance,
+    "cosine" : _cosine_similarity
+}
