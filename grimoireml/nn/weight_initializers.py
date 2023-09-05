@@ -81,12 +81,12 @@ def _glorot_uniform_initializer(input_shape, output_shape):
 
 # Map the initializers to their corresponding functions
 _initializers_map = {
-    'zeros': _zeros_initializer,
+    'Zeros': _zeros_initializer,
     'He': _he_initializer,
     'Xavier': _xavier_initializer,
-    'uniform': _uniform_initializer,
-    'normal': _normal_initializer,
-    'glorot_uniform': _glorot_uniform_initializer
+    'Uniform': _uniform_initializer,
+    'Normal': _normal_initializer,
+    'Glorot_uniform': _glorot_uniform_initializer
 }
 
 def get_initializer(name):
