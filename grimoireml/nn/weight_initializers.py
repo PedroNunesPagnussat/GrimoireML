@@ -24,6 +24,8 @@ def _he_initializer(input_shape, output_shape):
     Returns:
         np.ndarray: A weight matrix initialized using He initialization.
     """
+
+    
     return np.random.randn(input_shape, output_shape) * np.sqrt(2. / input_shape)
 
 def _xavier_initializer(input_shape, output_shape):
@@ -89,7 +91,7 @@ _initializers_map = {
     'Glorot_uniform': _glorot_uniform_initializer
 }
 
-def get_initializer(name):
+def get_weight_initializer(name):
     """
     Retrieve a weight initializer function by its name.
     

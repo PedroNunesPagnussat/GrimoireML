@@ -6,16 +6,16 @@ def get_loss_function(loss: str) -> Tuple[Callable[[np.ndarray, np.ndarray], np.
     Return loss function and its derivative based on input.
     
     Args:
-        loss (str): The name of the loss function ("MSE", "MAE").
+        loss (str): The name of the loss function ("MSE", "MAE", "BCE", "CCE").
         
     Returns:
         Tuple[Callable, Callable]: The loss function and its derivative.
         
     Raises:
-        Exception: If an invalid loss function name is provided.
+        ValueError: If an invalid loss function name is provided.
     """
     if loss not in loss_map:
-        raise ValueError(f"Loss function {loss} not supported, supported losses are: {list(loss_map.keys())}")
+        raise ValueError(f"Loss function {loss} not supported, supported losses are: {sorted(list(loss_map.keys()))}")
     return loss_map[loss]
 
 def _mse(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
@@ -86,8 +86,71 @@ def _cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
     return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
 
+def _binary_cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    """
+    Compute Binary Cross-Entropy between true and predicted values.
+    
+    Args:
+        y_true (np.ndarray): The true labels.
+        y_pred (np.ndarray): The predicted labels.
+        
+    Returns:
+        np.ndarray: The Binary Cross-Entropy loss.
+    """
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+    return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+
+def _binary_cross_entropy_derivative(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    """
+    Compute derivative of Binary Cross-Entropy.
+    
+    Args:
+        y_true (np.ndarray): The true labels.
+        y_pred (np.ndarray): The predicted labels.
+        
+    Returns:
+        np.ndarray: The derivative of the Binary Cross-Entropy loss.
+    """
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+    return (y_pred - y_true) / (y_pred * (1 - y_pred))
+
+def _categorical_cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    """
+    Compute Categorical Cross-Entropy between true and predicted values.
+    
+    Args:
+        y_true (np.ndarray): The true labels.
+        y_pred (np.ndarray): The predicted labels.
+        
+    Returns:
+        np.ndarray: The Categorical Cross-Entropy loss.
+    """
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+    return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
+
+
+def _categorical_cross_entropy_derivative(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    """
+    Compute derivative of Categorical Cross-Entropy.
+    
+    Args:
+        y_true (np.ndarray): The true labels.
+        y_pred (np.ndarray): The predicted labels.
+        
+    Returns:
+        np.ndarray: The derivative of the Categorical Cross-Entropy loss.
+    """
+    epsilon = 1e-15
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+    return y_pred - y_true
+
 
 loss_map = {
     "MSE" : (_mse, _mse_derivative),
-    "MAE" : (_mae, _mae_derivative)
+    "MAE" : (_mae, _mae_derivative),
+    "BCE": (_binary_cross_entropy, _binary_cross_entropy_derivative),
+    "CCE": (_categorical_cross_entropy, _categorical_cross_entropy_derivative)
 }

@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from typing import Tuple, Callable, Union
 import numpy as np
 from ..functions import activation_functions
-from .weight_initializers import get_initializer
+from .weight_initializers import get_weight_initializer
+from .bias_initializers import get_bias_initializer
 
 class Layer(ABC):
     """
@@ -38,7 +39,7 @@ class Dense(Layer):
         
     """
     
-    def __init__(self, neurons: int, activation: str, initialaizer: str = "glorot_uniform", active_bias: bool = True):
+    def __init__(self, neurons: int, activation: str, weight_initializer: str = "Glorot_uniform", bias_initializer: str = "Zeros"):
         """
         Initialize a dense layer with neurons and activation function.
         
@@ -55,7 +56,9 @@ class Dense(Layer):
         self._delta = None
         self._weights_grad = None
         self._bias_grad = None
-        self._initializer = initialaizer
+        self._weight_initializer = get_weight_initializer(weight_initializer)
+        self._bias_initializer = get_bias_initializer(bias_initializer)
+
 
     def _initialize_weights_and_bias(self, input_shape: int):
         """
@@ -64,9 +67,8 @@ class Dense(Layer):
         Args:
             input_shape (int): The shape of the input data.
         """
-        initializer = get_initializer(self._initializer)
-        self._weights = initializer(input_shape, self._neurons)
-        self._biases = np.random.uniform(-1, 1, size=(self._neurons,))
+        self._weights = self._weight_initializer(input_shape, self._neurons)
+        self._biases = self._bias_initializer(self._neurons)
 
 
     def __str__(self) -> str:
