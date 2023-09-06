@@ -4,6 +4,8 @@ from ..functions.loss_functions import LossFunction
 from .optimizers import Optimizer
 from .layers import Layer
 
+
+
 class Sequential:
     def __init__(self):
         """Initialize a Sequential model."""
@@ -46,11 +48,11 @@ class Sequential:
 
         for epoch in range(epochs):
             for i in range(0, len(X), batch_size):
-                self._layers[0]._output = X[i:i + batch_size]
+                batch_X = X[i:i + batch_size]
                 batch_y = y[i:i + batch_size]
                 
 
-                self._process_batch(X, batch_y)
+                self._process_batch(batch_X, batch_y)
 
 
     def _process_batch(self, batch_X: np.ndarray, batch_y: np.ndarray) -> None:
@@ -66,6 +68,7 @@ class Sequential:
         for layer in self._layers:
             layer._delta = np.zeros((batch_size, layer._neurons))
             
+
         y_pred = self._forward(batch_X)
  
         self._backward(batch_y, y_pred)
