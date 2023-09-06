@@ -30,7 +30,7 @@ class Dense(Layer):
         _activation (Callable): Activation function.
         _activation_derivative (Callable): Derivative of the activation function.
         _weights (np.ndarray): Weights of the layer.
-        _biases (np.ndarray): Biases of the layer.
+        _bias (np.ndarray): Bias of the layer.
         _sum (np.ndarray): Weighted sum before activation.
         _output (np.ndarray): Output after activation.
         _delta (np.ndarray): Error term for backpropagation.
@@ -39,7 +39,7 @@ class Dense(Layer):
         
     """
     
-    def __init__(self, neurons: int, activation: str, weight_initializer: str = "Glorot_uniform", bias_initializer: str = "Zeros"):
+    def __init__(self, input_shape: int, neurons: int, activation: str, weight_initializer: str = "Glorot_uniform", bias_initializer: str = "Zeros"):
         """
         Initialize a dense layer with neurons and activation function.
         
@@ -47,29 +47,62 @@ class Dense(Layer):
             neurons (int): Number of neurons in the layer.
             activation (str): Name of the activation function.
         """
+
+        self._input_shape = input_shape
         self._neurons = neurons
+        self._weights = get_weight_initializer(weight_initializer)(input_shape, neurons)
+        self._bias = get_bias_initializer(bias_initializer)(neurons)
+        
         self._activation, self._activation_derivative = activation_functions.get_activation_function(activation)
-        self._weights = None
-        self._biases = None
+        
         self._sum = None
         self._output = None
         self._delta = None
         self._weights_grad = None
         self._bias_grad = None
-        self._weight_initializer = get_weight_initializer(weight_initializer)
-        self._bias_initializer = get_bias_initializer(bias_initializer)
 
-
-    def _initialize_weights_and_bias(self, input_shape: int):
+    def _forward(self, input: np.ndarray) -> np.ndarray:
         """
-        Initialize weights and biases for the layer.
+        Perform the forward pass.
         
         Args:
-            input_shape (int): The shape of the input data.
+            input (np.ndarray): Input data.
+            
+        Returns:
+            np.ndarray: Output of the layer.
         """
-        self._weights = self._weight_initializer(input_shape, self._neurons)
-        self._biases = self._bias_initializer(self._neurons)
+        self._sum = np.dot(input, self._weights) + self._bias
+        self._output = self._activation(self._sum)
+        return self._output
+    
 
+    def _backward(self, error: np.ndarray) -> np.ndarray:
+        """
+        Perform the backward pass.
+        
+        Args:
+            error (np.ndarray): Error term.
+            
+        Returns:
+            np.ndarray: Error term for the previous layer.
+        """
+        self._delta = error * self._activation_derivative(self._sum)
+        return np.dot(self._delta, self._weights.T)
+    
+    
+    def _compute_gradients(self, input: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Compute the gradients for the layer.
+        
+        Args:
+            input (np.ndarray): Input data.
+            
+        Returns:
+            Tuple[np.ndarray, np.ndarray]: Gradients for the weights and bias.
+        """
+        self._weights_grad = np.dot(input.T, self._delta)
+        self._bias_grad = np.sum(self._delta, axis=0)
+        self._weights_grad, self._bias_grad
 
     def __str__(self) -> str:
         """
@@ -78,31 +111,7 @@ class Dense(Layer):
         Returns:
             str: Description of the dense layer.
         """
-        return f"Dense layer with {self._neurons} neurons and {self._activation.__name__} activation"
+        return f"Dense layer with Input_Shape: {self._input_shape} And Neuros: {self._neurons} and {self._activation.__name__} activation"
 
 
-class Input(Layer):
-    """
-    Class representing an input layer in a neural network.
-    
-    Attributes:
-        _input_shape (Tuple[int, int]): Shape of the input data.
-    """
-    
-    def __init__(self, input_shape: Tuple[int, int]):
-        """
-        Initialize an input layer with a given shape.
-        
-        Args:
-            input_shape (Tuple[int, int]): Shape of the input data.
-        """
-        self._input_shape = input_shape
 
-    def __str__(self) -> str:
-        """
-        Return string representation of the input layer.
-        
-        Returns:
-            str: Description of the input layer.
-        """
-        return f"Input layer with shape {self._input_shape}"

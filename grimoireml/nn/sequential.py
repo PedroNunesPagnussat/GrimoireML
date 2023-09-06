@@ -21,6 +21,7 @@ class Sequential:
         self._layers.append(layer)
         # self._layers = np.append(self._layers, layer)
 
+
     def compile(self, loss: str, optimizer: Optimizer) -> None:
         """Compile the model by setting the loss function and optimizer.
         
@@ -32,10 +33,6 @@ class Sequential:
         self._loss, self._loss_derivative = loss_functions.get_loss_function(loss)
         self._optimizer = optimizer
 
-        input_shape = self._layers[0]._input_shape
-        for layer in self._layers[1:]:
-            layer._initialize_weights_and_bias(input_shape)
-            input_shape = layer._neurons
 
     def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1) -> None:
         """Fit the model to the data.
@@ -66,16 +63,18 @@ class Sequential:
             batch_y (np.ndarray): Corresponding labels for the batch.
         """
         batch_size = len(batch_X)
-        for layer in self._layers[1:]:
+
+        for layer in self._layers:
             layer._delta = np.zeros((batch_size, layer._neurons))
             
         y_pred = self._forward(batch_X)
+ 
         self._backward(batch_y, y_pred)
-        self._compute_gradients()
+        self._compute_gradients(batch_X)
         self._optimizer._update(self._layers)
 
 
-    def _forward(self, X: np.ndarray) -> np.ndarray:
+    def _forward(self, inputs: np.ndarray) -> np.ndarray:
         """Perform the forward pass.
         
         Args:
@@ -84,12 +83,8 @@ class Sequential:
         Returns:
             The output of the last layer.
         """
-        inputs = X
-        for layer in self._layers[1:]:
-            z = np.dot(inputs, layer._weights) + layer._biases
-            layer._sum = z
-            layer._output = layer._activation(z)
-            inputs = layer._output
+        for layer in self._layers:
+            inputs = layer._forward(inputs)
         return inputs
 
     def _backward(self, y_true: np.ndarray, y_pred: np.ndarray) -> None:
@@ -100,26 +95,24 @@ class Sequential:
             y_true (np.ndarray): True labels.
             y_pred (np.ndarray): Predicted labels from the forward pass.
         """
-        y_true = y_true.reshape(y_pred.shape)
-        error = self._loss_derivative(y_true, y_pred)
-        output_layer = self._layers[-1]
-        np.multiply(error, output_layer._activation_derivative(output_layer._sum), out=output_layer._delta)
-        for i in range(len(self._layers) - 2, 0, -1):
-            layer = self._layers[i]
-            next_layer = self._layers[i + 1]
-            error = np.dot(next_layer._delta, next_layer._weights.T)
-            np.multiply(error, layer._activation_derivative(layer._sum), out=layer._delta)
 
-    def _compute_gradients(self) -> List[tuple]:
+        y_true = y_true.reshape(y_pred.shape)
+        
+        error = self._loss_derivative(y_true, y_pred)
+        for layer in list(reversed(self._layers)):
+            error = layer._backward(error)
+        return error
+        
+
+    def _compute_gradients(self, inputs: np.ndarray) -> List[tuple]:
         """Compute the gradients for all layers.
         
         Returns:
             A list of tuples containing weight and bias gradients for each layer.
         """
-        for i, layer in enumerate(self._layers[1:]):
-            prev_layer = self._layers[i]
-            layer._weights_grad = np.dot(prev_layer._output.T, layer._delta)
-            layer._bias_grad = np.sum(layer._delta, axis=0)
+        for layer in self._layers:
+            layer._compute_gradients(inputs)
+            inputs = layer._output
 
 
     def predict(self, X: np.ndarray) -> np.ndarray:

@@ -27,7 +27,7 @@ class Optimizer(ABC):
         Args:
             layers (List[Layer]): List of layers to be updated.
         """
-        for layer in layers[1:]:
+        for layer in layers:
             self._layer_update(layer)
 
     @abstractmethod
@@ -65,5 +65,6 @@ class SGD(Optimizer):
         Args:
             layer (Layer): The layer to be updated.
         """
+
         layer._weights -= self._lr * layer._weights_grad
-        layer._biases -= self._lr * layer._bias_grad
+        layer._bias -= self._lr * layer._bias_grad
