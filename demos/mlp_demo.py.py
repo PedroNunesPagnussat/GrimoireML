@@ -5,11 +5,11 @@ import numpy as np
 from timeit import default_timer as timer
 import numpy as np
 
-from .grimoireml.nn.sequential import Sequential as GMLSequential
-from ..grimoireml.nn.layers import Dense
-from ..grimoireml.functions.activation_functions import Sigmoid, Linear
-from ..grimoireml.nn.optimizers import SGD
-from ..grimoireml.functions.loss_functions import MSE, BCE
+from GrimoireML.grimoireml.nn.sequential import Sequential as GMLSequential
+from GrimoireML.grimoireml.nn.layers import Dense
+from GrimoireML.grimoireml.functions.activation_functions import Sigmoid, Linear
+from GrimoireML.grimoireml.nn.optimizers import SGD
+from GrimoireML.grimoireml.functions.loss_functions import MSE, BCE
 
 from GRIMOIREML.grimoireml.nn.sequential import Sequential as GMLSequential
 # set random seed
