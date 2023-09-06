@@ -41,6 +41,12 @@ class Optimizer(ABC):
         pass
 
 
+    @abstractmethod
+    def __str__(self) -> str:
+        """Return the string representation of the optimizer."""
+        pass
+
+
 class SGD(Optimizer):
     """
     Stochastic Gradient Descent (SGD) optimizer.
@@ -68,3 +74,8 @@ class SGD(Optimizer):
 
         layer._weights -= self._lr * layer._weights_grad
         layer._bias -= self._lr * layer._bias_grad
+
+
+    def __str__(self) -> str:
+        """Return the string representation of the optimizer."""
+        return f"SGD(lr={self._lr})"

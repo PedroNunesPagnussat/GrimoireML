@@ -4,6 +4,7 @@ import numpy as np
 from ..functions import activation_functions
 from .weight_initializers import get_weight_initializer
 from .bias_initializers import get_bias_initializer
+from ..functions.activation_functions import ActivationFunction
 
 class Layer(ABC):
     """
@@ -39,7 +40,7 @@ class Dense(Layer):
         
     """
     
-    def __init__(self, input_shape: int, neurons: int, activation: str, weight_initializer: str = "Glorot_uniform", bias_initializer: str = "Zeros"):
+    def __init__(self, input_shape: int, neurons: int, activation: ActivationFunction, weight_initializer: str = "Glorot_uniform", bias_initializer: str = "Zeros"):
         """
         Initialize a dense layer with neurons and activation function.
         
@@ -53,7 +54,7 @@ class Dense(Layer):
         self._weights = get_weight_initializer(weight_initializer)(input_shape, neurons)
         self._bias = get_bias_initializer(bias_initializer)(neurons)
         
-        self._activation, self._activation_derivative = activation_functions.get_activation_function(activation)
+        self._activation = activation
         
         self._sum = None
         self._output = None
@@ -72,7 +73,7 @@ class Dense(Layer):
             np.ndarray: Output of the layer.
         """
         self._sum = np.dot(input, self._weights) + self._bias
-        self._output = self._activation(self._sum)
+        self._output = self._activation._activation(self._sum)
         return self._output
     
 
@@ -86,7 +87,7 @@ class Dense(Layer):
         Returns:
             np.ndarray: Error term for the previous layer.
         """
-        self._delta = error * self._activation_derivative(self._sum)
+        self._delta = error * self._activation._derivative(self._sum)
         return np.dot(self._delta, self._weights.T)
     
     
@@ -111,7 +112,7 @@ class Dense(Layer):
         Returns:
             str: Description of the dense layer.
         """
-        return f"Dense layer with Input_Shape: {self._input_shape} And Neuros: {self._neurons} and {self._activation.__name__} activation"
+        return f"Dense layer with Input_Shape: {self._input_shape} And Neuros: {self._neurons} and {self._activation} activation"
 
 
 

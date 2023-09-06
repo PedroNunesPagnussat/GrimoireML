@@ -1,235 +1,283 @@
-from typing import Callable, Tuple
+from abc import ABC, abstractmethod
 import numpy as np
 
+class ActivationFunction(ABC):
+    """
+    Abstract base class for activation functions.
+    """
+    @abstractmethod
+    def _activation(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the activation function to the input array.
 
-def get_activation_function(activation: str) -> Tuple[Callable[[np.ndarray], np.ndarray], Callable[[np.ndarray], np.ndarray]]:
-    """
-    Return activation function and its derivative based on the input string.
-    
-    Args:
-        activation (str): The name of the activation function ("sigmoid", "relu", "tanh", "softmax", "leaky_relu", "elu", "selu", "linear").
-        
-    Returns:
-        Tuple[Callable, Callable]: The activation function and its derivative.
-        
-    Raises:
-        ValueError: If the activation function specified is not supported.
-    """
-    if activation not in activation_map:
-        raise ValueError(f"Activation function {activation} not supported. Supported activations are: {sorted(list(activation_map.keys()))}")
-    return activation_map[activation]
+        Args:
+            x (np.ndarray): The input array.
 
+        Returns:
+            np.ndarray: The array after applying the activation function.
+        """
+        pass
 
-def _sigmoid(x: np.ndarray) -> np.ndarray:
-    """
-    Apply sigmoid function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the sigmoid function.
-    """
-    return 1 / (1 + np.exp(-x))
+    @abstractmethod
+    def _derivative(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the derivative of the activation function to the input array.
 
-def _sigmoid_derivative(x: np.ndarray) -> np.ndarray:
-    """
-    Apply derivative of sigmoid function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the derivative of the sigmoid function.
-    """
-    sx = _sigmoid(x)
-    return sx * (1 - sx)
+        Args:
+            x (np.ndarray): The input array.
 
-def _relu(x: np.ndarray) -> np.ndarray:
-    """
-    Apply ReLU function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the ReLU function.
-    """
-    return np.maximum(x, 0, out=x)
+        Returns:
+            np.ndarray: The array after applying the derivative of the activation function.
+        """
+        pass
 
-def _relu_derivative(x: np.ndarray) -> np.ndarray:
-    """
-    Apply derivative of ReLU function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the derivative of the ReLU function.
-    """
-    return np.where(x > 0, 1, 0)
+    @abstractmethod
+    def __str__(self) -> str:
+        """
+        Return the name of the activation function as a string.
 
-def _tanh(x: np.ndarray) -> np.ndarray:
-    """
-    Apply tanh function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the tanh function.
-    """
-    return np.tanh(x)
+        Returns:
+            str: The name of the activation function.
+        """
+        pass
 
-def _tanh_derivative(x: np.ndarray) -> np.ndarray:
+# Tip: Consistent naming and documentation make the code more maintainable.
+class Sigmoid(ActivationFunction):
     """
-    Apply derivative of tanh function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the derivative of the tanh function.
+    Sigmoid activation function.
     """
-    return 1 - np.tanh(x) ** 2
+    def _activation(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the sigmoid activation function to the input array.
 
-def _softmax(x: np.ndarray) -> np.ndarray:
-    """
-    Apply softmax function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the softmax function.
-    """
-    exp_x = np.exp(x - np.max(x))
-    return exp_x / exp_x.sum(axis=1, keepdims=True)
+        Args:
+            x (np.ndarray): The input array.
 
-def _softmax_derivative(x: np.ndarray) -> np.ndarray:
-    """
-    Apply derivative of softmax function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the derivative of the softmax function.
-    """
-    s = _softmax(x)
-    return s * (1 - s)
+        Returns:
+            np.ndarray: The array after applying the sigmoid activation function.
+        """
+        return 1 / (1 + np.exp(-x))
 
+    def _derivative(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the derivative of the sigmoid activation function to the input array.
 
-def _leaky_relu(x: np.ndarray, alpha: float = 0.01) -> np.ndarray:
-    """
-    Apply Leaky ReLU function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        alpha (float): The slope for negative values. Default is 0.01.
-        
-    Returns:
-        np.ndarray: The array after applying the Leaky ReLU function.
-    """
-    return np.where(x > 0, x, alpha * x)
+        Args:
+            x (np.ndarray): The input array.
 
-def _leaky_relu_derivative(x: np.ndarray, alpha: float = 0.01) -> np.ndarray:
-    """
-    Apply derivative of Leaky ReLU function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        alpha (float): The slope for negative values. Default is 0.01.
-        
-    Returns:
-        np.ndarray: The array after applying the derivative of the Leaky ReLU function.
-    """
-    return np.where(x > 0, 1, alpha)
+        Returns:
+            np.ndarray: The array after applying the derivative of the sigmoid activation function.
+        """
+        sx = self._activation(x)
+        return sx * (1 - sx)
 
-def _elu(x: np.ndarray, alpha: float = 1.0) -> np.ndarray:
-    """
-    Apply ELU function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        alpha (float): The alpha value for ELU. Default is 1.0.
-        
-    Returns:
-        np.ndarray: The array after applying the ELU function.
-    """
-    return np.where(x > 0, x, alpha * (np.exp(x) - 1))
+    def __str__(self) -> str:
+        """
+        Return the name of the activation function as a string.
 
-def _elu_derivative(x: np.ndarray, alpha: float = 1.0) -> np.ndarray:
-    """
-    Apply derivative of ELU function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        alpha (float): The alpha value for ELU. Default is 1.0.
-        
-    Returns:
-        np.ndarray: The array after applying the derivative of the ELU function.
-    """
-    return np.where(x > 0, 1, alpha * np.exp(x))
+        Returns:
+            str: The name of the activation function.
+        """
+        return "Sigmoid"
 
-def _selu(x: np.ndarray) -> np.ndarray:
+# Tip: Consider using NumPy's built-in functions for better performance.
+class ReLU(ActivationFunction):
     """
-    Apply SELU function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the SELU function.
+    Rectified Linear Unit (ReLU) activation function.
     """
-    alpha, scale = 1.67326, 1.0507
-    return scale * np.where(x > 0, x, alpha * (np.exp(x) - 1))
+    def _activation(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the ReLU activation function to the input array.
 
-def _selu_derivative(x: np.ndarray) -> np.ndarray:
-    """
-    Apply derivative of SELU function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the derivative of the SELU function.
-    """
-    alpha, scale = 1.67326, 1.0507
-    return scale * np.where(x > 0, 1, alpha * np.exp(x))
+        Args:
+            x (np.ndarray): The input array.
 
-def _linear(x: np.ndarray) -> np.ndarray:
-    """
-    Apply Linear function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the Linear function.
-    """
-    return x
+        Returns:
+            np.ndarray: The array after applying the ReLU activation function.
+        """
+        return np.maximum(x, 0, out=x)
 
-def _linear_derivative(x: np.ndarray) -> np.ndarray:
+    def _derivative(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the derivative of the ReLU activation function to the input array.
+
+        Args:
+            x (np.ndarray): The input array.
+
+        Returns:
+            np.ndarray: The array after applying the derivative of the ReLU activation function.
+        """
+        return np.where(x > 0, 1, 0)
+
+    def __str__(self) -> str:
+        """
+        Return the name of the activation function as a string.
+
+        Returns:
+            str: The name of the activation function.
+        """
+        return "ReLU"
+
+# Tip: Use descriptive comments to explain non-obvious code.
+class Tanh(ActivationFunction):
     """
-    Apply derivative of Linear function to input array.
-    
-    Args:
-        x (np.ndarray): The input array.
-        
-    Returns:
-        np.ndarray: The array after applying the derivative of the Linear function.
+    Hyperbolic Tangent (Tanh) activation function.
     """
-    return np.ones_like(x)
+    def _activation(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the Tanh activation function to the input array.
+
+        Args:
+            x (np.ndarray): The input array.
+
+        Returns:
+            np.ndarray: The array after applying the Tanh activation function.
+        """
+        return np.tanh(x)
+
+    def _derivative(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the derivative of the Tanh activation function to the input array.
+
+        Args:
+            x (np.ndarray): The input array.
+
+        Returns:
+            np.ndarray: The array after applying the derivative of the Tanh activation function.
+        """
+        return 1 - np.tanh(x) ** 2
+
+    def __str__(self) -> str:
+        """
+        Return the name of the activation function as a string.
+
+        Returns:
+            str: The name of the activation function.
+        """
+        return "Tanh"
+
+# Tip: Be cautious with numerical stability, especially with functions like Softmax.
+class Softmax(ActivationFunction):
+    """
+    Softmax activation function.
+    """
+    def _activation(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the Softmax activation function to the input array.
+
+        Args:
+            x (np.ndarray): The input array.
+
+        Returns:
+            np.ndarray: The array after applying the Softmax activation function.
+        """
+        exp_x = np.exp(x - np.max(x))
+        return exp_x / exp_x.sum(axis=1, keepdims=True)
+
+    def _derivative(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the derivative of the Softmax activation function to the input array.
+
+        Args:
+            x (np.ndarray): The input array.
+
+        Returns:
+            np.ndarray: The array after applying the derivative of the Softmax activation function.
+        """
+        s = self._activation(x)
+        return s * (1 - s)
+
+    def __str__(self) -> str:
+        """
+        Return the name of the activation function as a string.
+
+        Returns:
+            str: The name of the activation function.
+        """
+        return "Softmax"
 
 
-activation_map = {
-    "sigmoid" : (_sigmoid, _sigmoid_derivative),
-    "relu" : (_relu, _relu_derivative),
-    "tanh": (_tanh, _tanh_derivative),
-    "softmax" : (_softmax, _softmax_derivative),
-    "leaky_relu": (_leaky_relu, _leaky_relu_derivative),
-    "elu": (_elu, _elu_derivative),
-    "selu": (_selu, _selu_derivative),
-    "linear": (_linear, _linear_derivative)
-}
+# Tip: Keep the interface consistent across different activation functions for easier usage and maintenance.
+class Linear(ActivationFunction):
+    """
+    Linear activation function.
+    """
+    def _activation(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the linear activation function to the input array.
+
+        Args:
+            x (np.ndarray): The input array.
+
+        Returns:
+            np.ndarray: The array after applying the linear activation function.
+        """
+        return x
+
+    def _derivative(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the derivative of the linear activation function to the input array.
+
+        Args:
+            x (np.ndarray): The input array.
+
+        Returns:
+            np.ndarray: The array after applying the derivative of the linear activation function.
+        """
+        return np.ones_like(x)
+
+    def __str__(self) -> str:
+        """
+        Return the name of the activation function as a string.
+
+        Returns:
+            str: The name of the activation function.
+        """
+        return "Linear"
+
+# Tip: When implementing variants, consider parameterizing them for greater flexibility.
+class LeakyReLU(ActivationFunction):
+    """
+    Leaky Rectified Linear Unit (LeakyReLU) activation function.
+    """
+    def __init__(self, alpha: float = 0.01):
+        """
+        Initialize the LeakyReLU activation function.
+
+        Args:
+            alpha (float): The slope for negative values. Default is 0.01.
+        """
+        self.alpha = alpha
+
+    def _activation(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the LeakyReLU activation function to the input array.
+
+        Args:
+            x (np.ndarray): The input array.
+
+        Returns:
+            np.ndarray: The array after applying the LeakyReLU activation function.
+        """
+        return np.where(x > 0, x, self.alpha * x)
+
+    def _derivative(self, x: np.ndarray) -> np.ndarray:
+        """
+        Apply the derivative of the LeakyReLU activation function to the input array.
+
+        Args:
+            x (np.ndarray): The input array.
+
+        Returns:
+            np.ndarray: The array after applying the derivative of the LeakyReLU activation function.
+        """
+        return np.where(x > 0, 1, self.alpha)
+
+    def __str__(self) -> str:
+        """
+        Return the name of the activation function as a string.
+
+        Returns:
+            str: The name of the activation function.
+        """
+        return f"LeakyReLU(alpha={self.alpha})"

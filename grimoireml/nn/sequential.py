@@ -1,6 +1,6 @@
 from typing import List, Union
 import numpy as np
-from ..functions import loss_functions
+from ..functions.loss_functions import LossFunction
 from .optimizers import Optimizer
 from .layers import Layer
 
@@ -8,7 +8,6 @@ class Sequential:
     def __init__(self):
         """Initialize a Sequential model."""
         self._loss = None
-        self._loss_derivative = None
         self._optimizer = None
         self._layers = []
 
@@ -22,7 +21,7 @@ class Sequential:
         # self._layers = np.append(self._layers, layer)
 
 
-    def compile(self, loss: str, optimizer: Optimizer) -> None:
+    def compile(self, loss: LossFunction, optimizer: Optimizer) -> None:
         """Compile the model by setting the loss function and optimizer.
         
         Args:
@@ -30,7 +29,7 @@ class Sequential:
             optimizer: The optimizer.
         """
 
-        self._loss, self._loss_derivative = loss_functions.get_loss_function(loss)
+        self._loss = loss
         self._optimizer = optimizer
 
 
@@ -98,7 +97,7 @@ class Sequential:
 
         y_true = y_true.reshape(y_pred.shape)
         
-        error = self._loss_derivative(y_true, y_pred)
+        error = self._loss._derivate(y_true, y_pred)
         for layer in list(reversed(self._layers)):
             error = layer._backward(error)
         return error

@@ -1,156 +1,232 @@
-from typing import Callable, Tuple
+from abc import ABC, abstractmethod
 import numpy as np
 
-def get_loss_function(loss: str) -> Tuple[Callable[[np.ndarray, np.ndarray], np.ndarray], Callable[[np.ndarray, np.ndarray], np.ndarray]]:
+class LossFunction(ABC):
     """
-    Return loss function and its derivative based on input.
+    Abstract base class for loss functions.
     
-    Args:
-        loss (str): The name of the loss function ("MSE", "MAE", "BCE", "CCE").
-        
-    Returns:
-        Tuple[Callable, Callable]: The loss function and its derivative.
-        
-    Raises:
-        ValueError: If an invalid loss function name is provided.
+    This class defines the interface that all loss functions must implement.
+    It includes methods for calculating the loss and its derivative.
     """
-    if loss not in loss_map:
-        raise ValueError(f"Loss function {loss} not supported, supported losses are: {sorted(list(loss_map.keys()))}")
-    return loss_map[loss]
-
-def _mse(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
-    """
-    Compute Mean Squared Error between true and predicted values.
     
-    Args:
-        y_true (np.ndarray): The true values.
-        y_pred (np.ndarray): The predicted values.
+    @abstractmethod
+    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the loss between true and predicted values.
         
-    Returns:
-        np.ndarray: The Mean Squared Error.
-    """
-    return np.mean((y_true - y_pred) ** 2)
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated loss.
+        
+        Note:
+            The shape and data type of the returned array will depend on the specific loss function.
+        """
+        pass
 
-def _mse_derivative(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    @abstractmethod
+    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the derivative of the loss function with respect to the predicted values.
+        
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated derivative of the loss.
+        
+        Note:
+            The shape and data type of the returned array will depend on the specific loss function.
+        """
+        pass
+
+    @abstractmethod
+    def __str__(self) -> str:
+        """
+        Return the string representation of the loss function.
+        
+        Returns:
+            str: The name or description of the loss function.
+        """
+        pass
+
+class MSE(LossFunction):
     """
-    Compute derivative of Mean Squared Error.
+    Mean Squared Error (MSE) loss function.
     
-    Args:
-        y_true (np.ndarray): The true values.
-        y_pred (np.ndarray): The predicted values.
-        
-    Returns:
-        np.ndarray: The derivative of the Mean Squared Error.
+    This class implements the Mean Squared Error loss function, commonly used for regression tasks.
     """
-    return 2 * (y_pred - y_true)
-
-def _mae(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
-    """
-    Compute Mean Absolute Error between true and predicted values.
     
-    Args:
-        y_true (np.ndarray): The true values.
-        y_pred (np.ndarray): The predicted values.
+    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the MSE loss between true and predicted values.
         
-    Returns:
-        np.ndarray: The Mean Absolute Error.
-    """
-    return np.mean(np.abs(y_true - y_pred))
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated MSE loss.
+        """
+        return np.mean((y_true - y_pred) ** 2)
 
-def _mae_derivative(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the derivative of the MSE loss function.
+        
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated derivative of the MSE loss.
+        """
+        return 2 * (y_pred - y_true)
+
+    def __str__(self) -> str:
+        """
+        Return the string representation of the MSE loss function.
+        
+        Returns:
+            str: The name "Mean Squared Error".
+        """
+        return "Mean Squared Error (MSE)"
+
+
+class MAE(LossFunction):
     """
-    Compute derivative of Mean Absolute Error.
+    Mean Absolute Error (MAE) loss function.
     
-    Args:
-        y_true (np.ndarray): The true values.
-        y_pred (np.ndarray): The predicted values.
-        
-    Returns:
-        np.ndarray: The derivative of the Mean Absolute Error.
+    This class implements the Mean Absolute Error loss function, which is commonly used for regression tasks.
     """
-    return np.sign(y_pred - y_true)
-
-def _cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
-    """
-    Compute Cross-Entropy Loss between true and predicted values.
     
-    Args:
-        y_true (np.ndarray): The true values.
-        y_pred (np.ndarray): The predicted values.
+    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the MAE loss between true and predicted values.
         
-    Returns:
-        np.ndarray: The Cross-Entropy Loss.
-    """
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-    return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated MAE loss.
+        """
+        return np.mean(np.abs(y_true - y_pred))
 
+    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the derivative of the MAE loss function.
+        
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated derivative of the MAE loss.
+        """
+        return np.sign(y_pred - y_true)
 
-def _binary_cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def __str__(self) -> str:
+        """
+        Return the string representation of the MAE loss function.
+        
+        Returns:
+            str: The name "Mean Absolute Error".
+        """
+        return "Mean Absolute Error (MAE)"
+
+class BCE(LossFunction):
     """
-    Compute Binary Cross-Entropy between true and predicted values.
+    Binary Cross-Entropy (BCE) loss function.
     
-    Args:
-        y_true (np.ndarray): The true labels.
-        y_pred (np.ndarray): The predicted labels.
-        
-    Returns:
-        np.ndarray: The Binary Cross-Entropy loss.
+    This class implements the Binary Cross-Entropy loss function, which is commonly used for binary classification tasks.
     """
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-    return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
-
-def _binary_cross_entropy_derivative(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
-    """
-    Compute derivative of Binary Cross-Entropy.
     
-    Args:
-        y_true (np.ndarray): The true labels.
-        y_pred (np.ndarray): The predicted labels.
+    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the BCE loss between true and predicted values.
         
-    Returns:
-        np.ndarray: The derivative of the Binary Cross-Entropy loss.
-    """
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-    return (y_pred - y_true) / (y_pred * (1 - y_pred))
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated BCE loss.
+        """
+        epsilon = 1e-15
+        y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+        return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
-def _categorical_cross_entropy(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the derivative of the BCE loss function.
+        
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated derivative of the BCE loss.
+        """
+        epsilon = 1e-15
+        y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+        return (y_pred - y_true) / (y_pred * (1 - y_pred))
+
+    def __str__(self) -> str:
+        """
+        Return the string representation of the BCE loss function.
+        
+        Returns:
+            str: The name "Binary Cross-Entropy".
+        """
+        return "Binary Cross-Entropy (BCE)"
+
+
+class CCE(LossFunction):
     """
-    Compute Categorical Cross-Entropy between true and predicted values.
+    Categorical Cross-Entropy (CCE) loss function.
     
-    Args:
-        y_true (np.ndarray): The true labels.
-        y_pred (np.ndarray): The predicted labels.
-        
-    Returns:
-        np.ndarray: The Categorical Cross-Entropy loss.
+    This class implements the Categorical Cross-Entropy loss function, which is commonly used for multi-class classification tasks.
     """
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-    return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
-
-
-def _categorical_cross_entropy_derivative(y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
-    """
-    Compute derivative of Categorical Cross-Entropy.
     
-    Args:
-        y_true (np.ndarray): The true labels.
-        y_pred (np.ndarray): The predicted labels.
+    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the CCE loss between true and predicted values.
         
-    Returns:
-        np.ndarray: The derivative of the Categorical Cross-Entropy loss.
-    """
-    epsilon = 1e-15
-    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
-    return y_pred - y_true
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated CCE loss.
+        """
+        epsilon = 1e-15
+        y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+        return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
 
+    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+        """
+        Calculate the derivative of the CCE loss function.
+        
+        Args:
+            y_true (np.ndarray): Array of true target values.
+            y_pred (np.ndarray): Array of predicted target values.
+        
+        Returns:
+            np.ndarray: The calculated derivative of the CCE loss.
+        """
+        epsilon = 1e-15
+        y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+        return y_pred - y_true
 
-loss_map = {
-    "MSE" : (_mse, _mse_derivative),
-    "MAE" : (_mae, _mae_derivative),
-    "BCE": (_binary_cross_entropy, _binary_cross_entropy_derivative),
-    "CCE": (_categorical_cross_entropy, _categorical_cross_entropy_derivative)
-}
+    def __str__(self) -> str:
+        """
+        Return the string representation of the CCE loss function.
+        
+        Returns:
+            str: The name "Categorical Cross-Entropy".
+        """
+        return "Categorical Cross-Entropy (CCE)"
