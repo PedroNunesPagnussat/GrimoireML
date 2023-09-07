@@ -73,7 +73,7 @@ class Dense(Layer):
             np.ndarray: Output of the layer.
         """
         self._sum = np.dot(input, self._weights) + self._bias
-        self._output = self._activation._activation(self._sum)
+        self._output = self._activation._compute(self._sum)
         return self._output
     
 
@@ -87,7 +87,9 @@ class Dense(Layer):
         Returns:
             np.ndarray: Error term for the previous layer.
         """
-        self._delta = error * self._activation._derivative(self._sum)
+
+        self._delta = error * self._activation._compute_derivative(self._sum)
+        
         return np.dot(self._delta, self._weights.T)
     
     

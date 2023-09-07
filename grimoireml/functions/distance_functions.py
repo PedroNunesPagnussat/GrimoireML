@@ -1,68 +1,100 @@
-from typing import Callable
+from abc import ABC, abstractmethod
+from typing import Callable, Type, Dict
 import numpy as np
 
-def get_distance_function(distance: str) -> Callable[[np.ndarray, np.ndarray], np.ndarray]:
+class DistanceFunction(ABC):
     """
-    Return distance function based on input string.
+    Abstract base class for distance functions.
     
-    Args:
-        distance (str): The name of the distance function ("euclidean", "manhattan", "cosine").
-        
-    Returns:
-        Callable: The distance function.
-        
-    Raises:
-        Exception: If an invalid distance function name is provided.
+    This class defines the interface that all distance functions must implement.
+    The actual distance computation is done in the private method `_compute`.
     """
-
-    if distance not in distance_map:
-        raise ValueError(f"Distance function {distance} not supported, supported distances are: {list(distance_map.keys())}")
-    return distance_map[distance]
-
-def _euclidean_distance(x: np.ndarray, y: np.ndarray) -> np.ndarray:
-    """
-    Calculate Euclidean distance between two vectors x and y.
     
-    Args:
-        x (np.ndarray): The first vector.
-        y (np.ndarray): The second vector.
+    @abstractmethod
+    def _compute(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        """
+        Compute the distance between vectors x and y (private method).
         
-    Returns:
-        np.ndarray: The Euclidean distance between x and y.
-    """
-    return np.linalg.norm(x - y, axis=1)
+        Args:
+            x (np.ndarray): The first vector.
+            y (np.ndarray): The second vector.
+        
+        Returns:
+            np.ndarray: The computed distance.
+        """
+        pass
 
-def _manhattan_distance(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    @abstractmethod
+    def __str__(self) -> str:
+        """
+        Return the string representation of the distance function.
+        
+        Returns:
+            str: The name or description of the distance function.
+        """
+        pass
+
+class EuclideanDistance(DistanceFunction):
     """
-    Calculate Manhattan distance between two vectors x and y.
+    Class for Euclidean distance computation.
+    """
     
-    Args:
-        x (np.ndarray): The first vector.
-        y (np.ndarray): The second vector.
+    def _compute(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        """
+        Compute the Euclidean distance between vectors x and y.
         
-    Returns:
-        np.ndarray: The Manhattan distance between x and y.
-    """
-    return np.sum(np.abs(x - y), axis=1)
+        Args:
+            x (np.ndarray): The first vector.
+            y (np.ndarray): The second vector.
+        
+        Returns:
+            np.ndarray: The Euclidean distance between x and y.
+        """
+        return np.linalg.norm(x - y, axis=1)
 
-def _cosine_similarity(x: np.ndarray, y: np.ndarray) -> np.ndarray:
+    def __str__(self) -> str:
+        return "Euclidean Distance"
+
+class ManhattanDistance(DistanceFunction):
     """
-    Calculate Cosine similarity between vector x and each row in matrix y.
+    Class for Manhattan distance computation.
+    """
     
-    Args:
-        x (np.ndarray): The first vector.
-        y (np.ndarray): The matrix containing multiple vectors.
+    def _compute(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        """
+        Compute the Manhattan distance between vectors x and y.
         
-    Returns:
-        np.ndarray: The Cosine similarity between x and each row in y.
+        Args:
+            x (np.ndarray): The first vector.
+            y (np.ndarray): The second vector.
+        
+        Returns:
+            np.ndarray: The Manhattan distance between x and y.
+        """
+        return np.sum(np.abs(x - y), axis=1)
+
+    def __str__(self) -> str:
+        return "Manhattan Distance"
+
+class CosineSimilarity(DistanceFunction):
     """
-    x_norm = np.linalg.norm(x)
-    y_norm = np.linalg.norm(y, axis=1)
-    return np.dot(y, x) / (y_norm * x_norm)
+    Class for Cosine similarity computation.
+    """
+    
+    def _compute(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        """
+        Compute the Cosine similarity between vectors x and y.
+        
+        Args:
+            x (np.ndarray): The first vector.
+            y (np.ndarray): The second vector.
+        
+        Returns:
+            np.ndarray: The Cosine similarity between x and y.
+        """
+        x_norm = np.linalg.norm(x)
+        y_norm = np.linalg.norm(y, axis=1)
+        return np.dot(y, x) / (y_norm * x_norm)
 
-
-distance_map = {
-    "euclidean" : _euclidean_distance,
-    "manhattan" : _manhattan_distance,
-    "cosine" : _cosine_similarity
-}
+    def __str__(self) -> str:
+        return "Cosine Similarity"

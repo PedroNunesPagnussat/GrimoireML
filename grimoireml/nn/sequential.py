@@ -3,6 +3,7 @@ import numpy as np
 from ..functions.loss_functions import LossFunction
 from .optimizers import Optimizer
 from .layers import Layer
+from timeit import default_timer as timer
 
 
 
@@ -35,7 +36,7 @@ class Sequential:
         self._optimizer = optimizer
 
 
-    def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1) -> None:
+    def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1, verbose: int = 0) -> None:
         """Fit the model to the data.
         
         Args:
@@ -45,14 +46,21 @@ class Sequential:
             lr: The learning rate.
             batch_size: The batch size.
         """
+        num_batches = len(X) // batch_size
 
         for epoch in range(epochs):
+            start_time = timer()
+            epoch_loss = 0.0
+            epoch_acc = 0.0
+
             for i in range(0, len(X), batch_size):
                 batch_X = X[i:i + batch_size]
                 batch_y = y[i:i + batch_size]
-                
-
                 self._process_batch(batch_X, batch_y)
+
+
+
+                print(f"\r{epoch+1}/{epochs} [{i+batch_size}/{len(X)}] - {timer() - start_time:.2f}s - loss: {epoch_loss / (i+1):.4f} - acc: {epoch_acc / (i+1):.4f}", end='')
 
 
     def _process_batch(self, batch_X: np.ndarray, batch_y: np.ndarray) -> None:
@@ -65,15 +73,21 @@ class Sequential:
         """
         batch_size = len(batch_X)
 
+
         for layer in self._layers:
             layer._delta = np.zeros((batch_size, layer._neurons))
             
 
-        y_pred = self._forward(batch_X)
- 
-        self._backward(batch_y, y_pred)
+        y_pred = self._forward(batch_X)        
+        loss = self._loss._compute(y_true=batch_y, y_pred=y_pred)
+        loss_deriv = self._loss._compute_derivative(y_true=batch_y, y_pred=y_pred)
+        
+        self._backward(loss_deriv)
         self._compute_gradients(batch_X)
         self._optimizer._update(self._layers)
+        
+        return loss
+
 
 
     def _forward(self, inputs: np.ndarray) -> np.ndarray:
@@ -85,11 +99,12 @@ class Sequential:
         Returns:
             The output of the last layer.
         """
+        
         for layer in self._layers:
             inputs = layer._forward(inputs)
         return inputs
 
-    def _backward(self, y_true: np.ndarray, y_pred: np.ndarray) -> None:
+    def _backward(self, error: float) -> None:
         """
         Perform the backward pass to compute gradients.
         
@@ -98,12 +113,8 @@ class Sequential:
             y_pred (np.ndarray): Predicted labels from the forward pass.
         """
 
-        y_true = y_true.reshape(y_pred.shape)
-        
-        error = self._loss._derivate(y_true, y_pred)
         for layer in list(reversed(self._layers)):
             error = layer._backward(error)
-        return error
         
 
     def _compute_gradients(self, inputs: np.ndarray) -> List[tuple]:

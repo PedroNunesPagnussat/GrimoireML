@@ -10,7 +10,7 @@ class LossFunction(ABC):
     """
     
     @abstractmethod
-    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the loss between true and predicted values.
         
@@ -27,7 +27,7 @@ class LossFunction(ABC):
         pass
 
     @abstractmethod
-    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the derivative of the loss function with respect to the predicted values.
         
@@ -60,7 +60,7 @@ class MSE(LossFunction):
     This class implements the Mean Squared Error loss function, commonly used for regression tasks.
     """
     
-    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the MSE loss between true and predicted values.
         
@@ -73,7 +73,7 @@ class MSE(LossFunction):
         """
         return np.mean((y_true - y_pred) ** 2)
 
-    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the derivative of the MSE loss function.
         
@@ -84,7 +84,8 @@ class MSE(LossFunction):
         Returns:
             np.ndarray: The calculated derivative of the MSE loss.
         """
-        return 2 * (y_pred - y_true)
+
+        return (2 * (y_pred - y_true))
 
     def __str__(self) -> str:
         """
@@ -103,7 +104,7 @@ class MAE(LossFunction):
     This class implements the Mean Absolute Error loss function, which is commonly used for regression tasks.
     """
     
-    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the MAE loss between true and predicted values.
         
@@ -116,7 +117,7 @@ class MAE(LossFunction):
         """
         return np.mean(np.abs(y_true - y_pred))
 
-    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the derivative of the MAE loss function.
         
@@ -127,6 +128,7 @@ class MAE(LossFunction):
         Returns:
             np.ndarray: The calculated derivative of the MAE loss.
         """
+
         return np.sign(y_pred - y_true)
 
     def __str__(self) -> str:
@@ -145,7 +147,7 @@ class BCE(LossFunction):
     This class implements the Binary Cross-Entropy loss function, which is commonly used for binary classification tasks.
     """
     
-    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the BCE loss between true and predicted values.
         
@@ -156,11 +158,12 @@ class BCE(LossFunction):
         Returns:
             np.ndarray: The calculated BCE loss.
         """
+
         epsilon = 1e-15
         y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
         return -np.mean(y_true * np.log(y_pred) + (1 - y_true) * np.log(1 - y_pred))
 
-    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the derivative of the BCE loss function.
         
@@ -192,7 +195,7 @@ class CCE(LossFunction):
     This class implements the Categorical Cross-Entropy loss function, which is commonly used for multi-class classification tasks.
     """
     
-    def _loss(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the CCE loss between true and predicted values.
         
@@ -207,7 +210,7 @@ class CCE(LossFunction):
         y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
         return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))
 
-    def _derivate(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
         Calculate the derivative of the CCE loss function.
         

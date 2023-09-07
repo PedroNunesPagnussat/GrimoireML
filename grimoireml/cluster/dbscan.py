@@ -1,6 +1,6 @@
 from typing import List, Union
 import numpy as np
-from ..functions import distance_functions
+from ..functions.distance_functions import DistanceFunction
 
 class DBSCAN:
     """
@@ -29,7 +29,7 @@ class DBSCAN:
             self.cluster = -1
             self.visited = False
 
-    def __init__(self, eps: float = 0.5, min_points: int = 5, dist_func: str = "euclidean"):
+    def __init__(self, eps: float = 0.5, min_points: int = 5, dist_func: str = DistanceFunction):
         """
         Initialize DBSCAN with epsilon, minimum points, and distance function.
         
@@ -40,7 +40,7 @@ class DBSCAN:
         """
         self._min_points = min_points
         self._points = None
-        self.dist_func = distance_functions.get_distance_function(dist_func)
+        self.dist_func = dist_func
         self._eps = eps
         self.n_clusters = 0
         self.points_array = None
@@ -92,7 +92,7 @@ class DBSCAN:
         Returns:
             List[DBSCAN.Point]: List of neighbor points.
         """
-        distances = self.dist_func(self.points_array, point.data_point)
+        distances = self.dist_func._compute(self.points_array, point.data_point)
         distances[np.isclose(distances, 0)] = float('inf')
         neighbor_indices = np.where(distances <= self._eps)[0]
         return [self._points[i] for i in neighbor_indices]

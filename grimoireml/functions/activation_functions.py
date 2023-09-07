@@ -6,7 +6,7 @@ class ActivationFunction(ABC):
     Abstract base class for activation functions.
     """
     @abstractmethod
-    def _activation(self, x: np.ndarray) -> np.ndarray:
+    def _compute(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the activation function to the input array.
 
@@ -19,7 +19,7 @@ class ActivationFunction(ABC):
         pass
 
     @abstractmethod
-    def _derivative(self, x: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the derivative of the activation function to the input array.
 
@@ -46,7 +46,7 @@ class Sigmoid(ActivationFunction):
     """
     Sigmoid activation function.
     """
-    def _activation(self, x: np.ndarray) -> np.ndarray:
+    def _compute(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the sigmoid activation function to the input array.
 
@@ -58,7 +58,7 @@ class Sigmoid(ActivationFunction):
         """
         return 1 / (1 + np.exp(-x))
 
-    def _derivative(self, x: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the derivative of the sigmoid activation function to the input array.
 
@@ -68,7 +68,7 @@ class Sigmoid(ActivationFunction):
         Returns:
             np.ndarray: The array after applying the derivative of the sigmoid activation function.
         """
-        sx = self._activation(x)
+        sx = self._compute(x)
         return sx * (1 - sx)
 
     def __str__(self) -> str:
@@ -85,7 +85,7 @@ class ReLU(ActivationFunction):
     """
     Rectified Linear Unit (ReLU) activation function.
     """
-    def _activation(self, x: np.ndarray) -> np.ndarray:
+    def _compute(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the ReLU activation function to the input array.
 
@@ -97,7 +97,7 @@ class ReLU(ActivationFunction):
         """
         return np.maximum(x, 0, out=x)
 
-    def _derivative(self, x: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the derivative of the ReLU activation function to the input array.
 
@@ -123,7 +123,7 @@ class Tanh(ActivationFunction):
     """
     Hyperbolic Tangent (Tanh) activation function.
     """
-    def _activation(self, x: np.ndarray) -> np.ndarray:
+    def _compute(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the Tanh activation function to the input array.
 
@@ -135,7 +135,7 @@ class Tanh(ActivationFunction):
         """
         return np.tanh(x)
 
-    def _derivative(self, x: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the derivative of the Tanh activation function to the input array.
 
@@ -161,7 +161,7 @@ class Softmax(ActivationFunction):
     """
     Softmax activation function.
     """
-    def _activation(self, x: np.ndarray) -> np.ndarray:
+    def _compute(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the Softmax activation function to the input array.
 
@@ -174,7 +174,7 @@ class Softmax(ActivationFunction):
         exp_x = np.exp(x - np.max(x))
         return exp_x / exp_x.sum(axis=1, keepdims=True)
 
-    def _derivative(self, x: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the derivative of the Softmax activation function to the input array.
 
@@ -184,7 +184,7 @@ class Softmax(ActivationFunction):
         Returns:
             np.ndarray: The array after applying the derivative of the Softmax activation function.
         """
-        s = self._activation(x)
+        s = self._compute(x)
         return s * (1 - s)
 
     def __str__(self) -> str:
@@ -202,7 +202,7 @@ class Linear(ActivationFunction):
     """
     Linear activation function.
     """
-    def _activation(self, x: np.ndarray) -> np.ndarray:
+    def _compute(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the linear activation function to the input array.
 
@@ -214,7 +214,7 @@ class Linear(ActivationFunction):
         """
         return x
 
-    def _derivative(self, x: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the derivative of the linear activation function to the input array.
 
@@ -249,7 +249,7 @@ class LeakyReLU(ActivationFunction):
         """
         self.alpha = alpha
 
-    def _activation(self, x: np.ndarray) -> np.ndarray:
+    def _compute(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the LeakyReLU activation function to the input array.
 
@@ -261,7 +261,7 @@ class LeakyReLU(ActivationFunction):
         """
         return np.where(x > 0, x, self.alpha * x)
 
-    def _derivative(self, x: np.ndarray) -> np.ndarray:
+    def _compute_derivative(self, x: np.ndarray) -> np.ndarray:
         """
         Apply the derivative of the LeakyReLU activation function to the input array.
 
