@@ -5,13 +5,12 @@ import numpy as np
 from timeit import default_timer as timer
 import numpy as np
 
-from GrimoireML.grimoireml.nn.sequential import Sequential as GMLSequential
+from GrimoireML.grimoireml.nn.sequential import Sequential
 from GrimoireML.grimoireml.nn.layers import Dense
-from GrimoireML.grimoireml.functions.activation_functions import Sigmoid, Linear
+from GrimoireML.grimoireml.functions.activation_functions import Sigmoid, Linear, ReLU
 from GrimoireML.grimoireml.nn.optimizers import SGD
 from GrimoireML.grimoireml.functions.loss_functions import MSE, BCE
 
-from GRIMOIREML.grimoireml.nn.sequential import Sequential as GMLSequential
 # set random seed
 np.random.seed(42)
 
@@ -31,20 +30,22 @@ def steal_data_from_skl():
 
 X_train, X_test, y_train, y_test = steal_data_from_skl()
 epochs = 20
-batch_size = 1
+batch_size = 16
 input_shape = X_train.shape[1]
+y_train = y_train.reshape(-1, 1)
+
 
 
 print("GML")
 
 time_start = timer()
 
-model = GMLSequential()
+model = Sequential()
 model.add(Dense(input_shape, 16, activation=Sigmoid()))
-model.add(Dense(16, 8, activation=Sigmoid(), weight_initializer="Glorot_uniform", bias_initializer="Zeros"))
-model.add(Dense(8, 4,  activation=Sigmoid(), weight_initializer="Glorot_uniform", bias_initializer="Zeros"))
-model.add(Dense(4, 2,  activation=Sigmoid(), weight_initializer="Glorot_uniform", bias_initializer="Zeros"))
-model.add(Dense(2, 1,  activation=Linear(), weight_initializer="Glorot_uniform", bias_initializer="Zeros"))
+model.add(Dense(16, 8, activation=ReLU(), weight_initializer="Glorot_uniform", bias_initializer="Zeros"))
+model.add(Dense(8, 4,  activation=ReLU(), weight_initializer="Glorot_uniform", bias_initializer="Zeros"))
+model.add(Dense(4, 2,  activation=ReLU(), weight_initializer="Glorot_uniform", bias_initializer="Zeros"))
+model.add(Dense(2, 1,  activation=Sigmoid(), weight_initializer="Glorot_uniform", bias_initializer="Zeros"))
 model.compile(optimizer=SGD(lr=0.01), loss=MSE())
 model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size)
 
