@@ -4,7 +4,7 @@ from ..functions.loss_functions import LossFunction
 from .optimizers import Optimizer
 from .layers import Layer
 from timeit import default_timer as timer
-
+from time import sleep
 
 
 class Sequential:
@@ -13,6 +13,7 @@ class Sequential:
         self._loss = None
         self._optimizer = None
         self._layers = []
+        self._loss_list = None
 
     def add(self, layer: Layer) -> None:
         """Add a layer to the model.
@@ -36,7 +37,7 @@ class Sequential:
         self._optimizer = optimizer
 
 
-    def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1, verbose: int = 0) -> None:
+    def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1, verbose: int = 1) -> None:
         """Fit the model to the data.
         
         Args:
@@ -46,7 +47,8 @@ class Sequential:
             lr: The learning rate.
             batch_size: The batch size.
         """
-        num_batches = len(X) // batch_size
+        num_batches = (len(X) // batch_size)
+        self._loss_list = np.zeros((epochs, 1))
 
         for epoch in range(epochs):
             start_time = timer()
@@ -56,12 +58,31 @@ class Sequential:
             for i in range(0, len(X), batch_size):
                 batch_X = X[i:i + batch_size]
                 batch_y = y[i:i + batch_size]
-                self._process_batch(batch_X, batch_y)
+                
+                
+                batch_loss, epoch_metric = self._process_batch(batch_X, batch_y)
+
+                epoch_loss += batch_loss
+                epoch_metric += epoch_metric
 
 
+                
+                if verbose == 1:
+                    progress = (i + batch_size) / len(X)
+                    num_hashes = int(progress * 25)  # Each hash represents 4% progress
+                    bar = "#" * num_hashes + "-" * (25 - num_hashes)
 
-                print(f"\r{epoch+1}/{epochs} [{i+batch_size}/{len(X)}] - {timer() - start_time:.2f}s - loss: {epoch_loss / (i+1):.4f} - acc: {epoch_acc / (i+1):.4f}", end='')
-
+                    s = f"\rEpoch: {epoch+1}/{epochs} Batch: {(i) // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (i+1):.8f} - METRIC NAME: {epoch_metric / (i+1):.8f} - [{bar}]"
+                    print(f"{s}", end='')
+                    
+                elif verbose == 2:
+                    s = f"\rEpoch: {epoch+1}/{epochs} Batch: {(i) // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (i+1):.8f} - METRIC NAME: {epoch_metric / (i+1):.8f}"
+                    print(s, end='')
+                
+            self._loss_list[epoch] = epoch_loss
+            
+            if verbose:
+                print()
 
     def _process_batch(self, batch_X: np.ndarray, batch_y: np.ndarray) -> None:
         """
@@ -86,7 +107,7 @@ class Sequential:
         self._compute_gradients(batch_X)
         self._optimizer._update(self._layers)
         
-        return loss
+        return loss, 0
 
 
 
