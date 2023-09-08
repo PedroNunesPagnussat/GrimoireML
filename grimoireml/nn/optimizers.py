@@ -30,6 +30,7 @@ class Optimizer(ABC):
         for layer in layers:
             self._layer_update(layer)
 
+
     @abstractmethod
     def _layer_update(self, layer: Layer) -> None:
         """

@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Tuple
 import numpy as np
-from .weight_initializers import get_weight_initializer
-from .bias_initializers import get_bias_initializer
-from .activation_functions import ActivationFunction
+from .initializers.weight_initializers import WeightInitializer, GlorotUniformWeightInitializer
+from .initializers.bias_initializers import BiasInitializer, ZerosBiasInitializer
+from .functions.activation_functions import ActivationFunction
 
 class Layer(ABC):
     """
@@ -39,7 +39,11 @@ class Dense(Layer):
         
     """
     
-    def __init__(self, input_shape: int, neurons: int, activation: ActivationFunction, weight_initializer: str = "Glorot_uniform", bias_initializer: str = "Zeros"):
+    def __init__(
+                    self, input_shape: int, neurons: int, 
+                    activation: ActivationFunction, 
+                    weight_initializer: WeightInitializer = GlorotUniformWeightInitializer(), bias_initializer: BiasInitializer = ZerosBiasInitializer()
+                ):
         """
         Initialize a dense layer with neurons and activation function.
         
@@ -50,8 +54,10 @@ class Dense(Layer):
 
         self._input_shape = input_shape
         self._neurons = neurons
-        self._weights = get_weight_initializer(weight_initializer)(input_shape, neurons)
-        self._bias = get_bias_initializer(bias_initializer)(neurons)
+        
+
+        self._bias = bias_initializer._initialize(neurons)
+        self._weights = weight_initializer._initialize(input_shape=input_shape, output_shape=neurons)
         
         self._activation = activation
         
@@ -113,7 +119,7 @@ class Dense(Layer):
         Returns:
             str: Description of the dense layer.
         """
-        return f"Dense layer with Input_Shape: {self._input_shape} And Neuros: {self._neurons} and {self._activation} activation"
+        return f"Dense layer with Input_Shape: {self._input_shape}, Neuros: {self._neurons}, Activation Function: {self._activation} activation, and Trainable Parameters: {self._weights.size + self._bias.size}"
 
 
 

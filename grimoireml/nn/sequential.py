@@ -1,6 +1,6 @@
 from typing import List
 import numpy as np
-from .loss_functions import LossFunction
+from .functions.loss_functions import LossFunction
 from .optimizers import Optimizer
 from .layers import Layer
 from ..functions.evaluation_functions import EvaluationFunction
@@ -41,6 +41,7 @@ class Sequential:
         """
 
         self._loss = loss
+        self
         self._optimizer = optimizer
         
 
