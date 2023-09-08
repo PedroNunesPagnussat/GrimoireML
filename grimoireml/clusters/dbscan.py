@@ -1,6 +1,6 @@
-from typing import List, Union
+from typing import List
 import numpy as np
-from ..functions.distance_functions import DistanceFunction
+from ..functions.distance_functions import DistanceFunction, EuclideanDistance
 
 class DBSCAN:
     """
@@ -29,7 +29,7 @@ class DBSCAN:
             self.cluster = -1
             self.visited = False
 
-    def __init__(self, eps: float = 0.5, min_points: int = 5, dist_func: str = DistanceFunction):
+    def __init__(self, eps: float = 0.5, min_points: int = 5, dist_func: DistanceFunction = EuclideanDistance()):
         """
         Initialize DBSCAN with epsilon, minimum points, and distance function.
         

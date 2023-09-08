@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, Callable, Union
+from typing import Tuple
 import numpy as np
-from ..functions import activation_functions
 from .weight_initializers import get_weight_initializer
 from .bias_initializers import get_bias_initializer
-from ..functions.activation_functions import ActivationFunction
+from .activation_functions import ActivationFunction
 
 class Layer(ABC):
     """

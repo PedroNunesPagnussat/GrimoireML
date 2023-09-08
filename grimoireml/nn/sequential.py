@@ -1,10 +1,13 @@
-from typing import List, Union
+from typing import List
 import numpy as np
-from ..functions.loss_functions import LossFunction
+from .loss_functions import LossFunction
 from .optimizers import Optimizer
 from .layers import Layer
+from ..functions.evaluation_functions import EvaluationFunction
 from timeit import default_timer as timer
 from time import sleep
+
+
 
 
 class Sequential:
@@ -13,7 +16,11 @@ class Sequential:
         self._loss = None
         self._optimizer = None
         self._layers = []
+        
+        # Summary attributes
         self._loss_list = None
+        
+        
 
     def add(self, layer: Layer) -> None:
         """Add a layer to the model.
@@ -25,7 +32,7 @@ class Sequential:
         # self._layers = np.append(self._layers, layer)
 
 
-    def compile(self, loss: LossFunction, optimizer: Optimizer) -> None:
+    def compile(self, optimizer: Optimizer, loss: LossFunction, metrics: List[EvaluationFunction]) -> None:
         """Compile the model by setting the loss function and optimizer.
         
         Args:
@@ -35,7 +42,7 @@ class Sequential:
 
         self._loss = loss
         self._optimizer = optimizer
-
+        
 
     def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1, verbose: int = 1) -> None:
         """Fit the model to the data.
