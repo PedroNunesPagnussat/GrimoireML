@@ -206,6 +206,7 @@ class CCE(LossFunction):
         Returns:
             np.ndarray: The calculated CCE loss.
         """
+        
         epsilon = 1e-15
         y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
         return -np.mean(np.sum(y_true * np.log(y_pred), axis=1))

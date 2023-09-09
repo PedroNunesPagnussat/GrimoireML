@@ -171,8 +171,9 @@ class Softmax(ActivationFunction):
         Returns:
             np.ndarray: The array after applying the Softmax activation function.
         """
-        exp_x = np.exp(x - np.max(x))
-        return exp_x / exp_x.sum(axis=1, keepdims=True)
+
+        exp_x = np.exp(x)
+        return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
     def _compute_derivative(self, x: np.ndarray) -> np.ndarray:
         """
@@ -184,8 +185,8 @@ class Softmax(ActivationFunction):
         Returns:
             np.ndarray: The array after applying the derivative of the Softmax activation function.
         """
-        s = self._compute(x)
-        return s * (1 - s)
+
+        return np.ones_like(x)
 
     def __str__(self) -> str:
         """

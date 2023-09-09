@@ -92,7 +92,6 @@ class Dense(Layer):
         Returns:
             np.ndarray: Error term for the previous layer.
         """
-
         self._delta = error * self._activation._compute_derivative(self._sum)
         
         return np.dot(self._delta, self._weights.T)
@@ -110,7 +109,7 @@ class Dense(Layer):
         """
         self._weights_grad = np.dot(input.T, self._delta)
         self._bias_grad = np.sum(self._delta, axis=0)
-        self._weights_grad, self._bias_grad
+        return self._weights_grad, self._bias_grad
 
     def __str__(self) -> str:
         """

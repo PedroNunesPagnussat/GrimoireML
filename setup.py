@@ -26,6 +26,7 @@ setup(
     ],
     install_requires=[
         'numpy==1.21.6', 
+        'pickle5==0.0.11',
 #        'scipy==1.7.3',   
     ],
     python_requires='>=3.6',  

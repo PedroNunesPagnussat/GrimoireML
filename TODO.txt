@@ -1,0 +1,44 @@
+Implementar Testes Unitários e de Integração
+Prioridade: 0
+
+Implementar Derivada da Função de Ativação SoftMax
+Prioridade: 2
+
+Permitir Uso de Dados de Validação no Modelo
+Prioridade: 3
+
+Aceitar Múltiplas Métricas de Avaliação Simultaneamente (ex: Acurácia, Precisão, MEA, MSE)
+Prioridade: 4
+
+Desenvolver Objeto para Armazenar Métricas e Losses de Treino e Validação
+Prioridade: 5
+
+Criar Método para Avaliação do Modelo (Evaluate)
+Prioridade: 6
+
+Criar Método para Realizar Predições (Predict)
+Prioridade: 7
+
+Implementar Otimizador Adam
+Prioridade: 8
+
+Implementar Otimizador RMSProp
+Prioridade: 9
+
+Implementar Early Stopping
+Prioridade: 13
+
+Permitir Checkpoints Durante o Treinamento
+Prioridade: 14
+
+Adicionar Camada Flatten
+Prioridade: 15
+
+Adicionar Camada Conv2D
+Prioridade: 16
+
+Adicionar Camada MaxPooling2D
+Prioridade: 16
+
+Suporte para Redes Neurais Convolucionais (CNNs) e Recorrentes (RNNs)
+Prioridade: 17
