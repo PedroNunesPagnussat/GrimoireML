@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from typing import Callable
 
 class BiasInitializer(ABC):
     """

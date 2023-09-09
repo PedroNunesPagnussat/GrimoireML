@@ -107,7 +107,7 @@ class Sequential:
             layer._delta = np.zeros((batch_size, layer._neurons))
             
 
-        y_pred = self._forward(batch_X)        
+        y_pred = self._forward(batch_X)  
         loss = self._loss._compute(y_true=batch_y, y_pred=y_pred)
         loss_deriv = self._loss._compute_derivative(y_true=batch_y, y_pred=y_pred)
         

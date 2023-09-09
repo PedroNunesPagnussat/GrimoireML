@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Callable, Type, Dict
 import numpy as np
 
 class DistanceFunction(ABC):
