@@ -4,6 +4,9 @@ from typing import Tuple
 import sys
 import os.path
 
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 
 sys.path.append(
@@ -23,11 +26,9 @@ import grimoireml.functions.evaluation_functions as eval_functions
 
 
 
-def fatch_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+def fetch_data() -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Steal data from sklearn and return train/test splits."""
-    from sklearn.datasets import load_breast_cancer
-    from sklearn.model_selection import train_test_split
-    from sklearn.preprocessing import StandardScaler
+
     data = load_breast_cancer()
     X, y = data.data, data.target
 
@@ -52,17 +53,24 @@ def main():
     # set random seed
     np.random.seed(42)
     
-    X_train, X_test, y_train, y_test = fatch_data()
+    X_train, X_test, y_train, y_test = fetch_data()
+    
+    # Fetch some validation data from X_train and y_train
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+    
     epochs = 20
     batch_size = 360
     input_shape = X_train.shape[1]
     y_train = y_train.reshape(-1, 1)
-
+    y_val = y_val.reshape(-1, 1)  # You also need to reshape y_val
+    
     print("GML")
 
     time_start = timer()
     model = build_model(input_shape)
-    model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size)
+    
+    # Add validation_data parameter in fit
+    model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_val, y_val))
 
     # predict and evaluate
     pred = model.predict(X_test[0])
@@ -72,6 +80,7 @@ def main():
     print(f"GML Time: {round(total_time, 4)}")
     print(pred, y_test[0])
 
+    print(model.history.history)
 
 if __name__ == "__main__":
     main()
