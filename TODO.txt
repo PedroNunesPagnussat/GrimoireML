@@ -1,44 +1,39 @@
-Implementar Testes Unitários e de Integração
-Prioridade: 0
+Basico: 
 
-Implementar Derivada da Função de Ativação SoftMax
-Prioridade: 2
+    Permitir Uso de Dados de Validação no Modelo
 
-Permitir Uso de Dados de Validação no Modelo
-Prioridade: 3
+    Desenvolver Objeto para Armazenar Métricas e Losses de Treino e Validação
 
-Aceitar Múltiplas Métricas de Avaliação Simultaneamente (ex: Acurácia, Precisão, MEA, MSE)
-Prioridade: 4
+    Criar Método para Realizar Predições (Predict)
 
-Desenvolver Objeto para Armazenar Métricas e Losses de Treino e Validação
-Prioridade: 5
+    Criar Método para Avaliação do Modelo (Evaluate)
 
-Criar Método para Avaliação do Modelo (Evaluate)
-Prioridade: 6
+    Aceitar Metricas de Avaliação
 
-Criar Método para Realizar Predições (Predict)
-Prioridade: 7
+    Implementar Metricas Como Accuracy, Precsion, Recall e F1 Score
 
-Implementar Otimizador Adam
-Prioridade: 8
+    Aceitar Múltiplas Métricas de Avaliação Simultaneamente (ex: Acurácia, Precisão, MEA, MSE)
 
-Implementar Otimizador RMSProp
-Prioridade: 9
+    Implementar Testes Unitários e de Integração
 
-Implementar Early Stopping
-Prioridade: 13
+    Implementar Otimizador Adam
 
-Permitir Checkpoints Durante o Treinamento
-Prioridade: 14
+    Implementar Otimizador RMSProp
 
-Adicionar Camada Flatten
-Prioridade: 15
+    Implementar Derivada da Função de Ativação SoftMax
 
-Adicionar Camada Conv2D
-Prioridade: 16
+    Histograma dos Pesos
 
-Adicionar Camada MaxPooling2D
-Prioridade: 16
+Avançado:
 
-Suporte para Redes Neurais Convolucionais (CNNs) e Recorrentes (RNNs)
-Prioridade: 17
+    Implementar Early Stopping
+
+    Permitir Checkpoints Durante o Treinamento
+
+    Adicionar Camada Flatten
+
+    Adicionar Camada Conv2D
+
+    Adicionar Camada MaxPooling2D
+
+    Suporte para Redes Neurais Convolucionais (CNNs) e Recorrentes (RNNs)

@@ -8,7 +8,12 @@ from mpl_toolkits.mplot3d import Axes3D
 from typing import Tuple
 
 # Your own library imports
-from GrimoireML.grimoireml.clusters.dbscan import DBSCAN
+
+import sys, os
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+
+from grimoireml.clusters.dbscan import DBSCAN
 
 def fetch_data() -> Tuple[np.ndarray, np.ndarray]:
     """Fetch Iris data and return the feature matrix and labels."""

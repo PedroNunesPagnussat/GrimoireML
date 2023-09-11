@@ -54,7 +54,7 @@ def main():
     
     X_train, X_test, y_train, y_test = fatch_data()
     epochs = 20
-    batch_size = 20
+    batch_size = 360
     input_shape = X_train.shape[1]
     y_train = y_train.reshape(-1, 1)
 
