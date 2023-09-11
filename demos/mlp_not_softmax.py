@@ -59,7 +59,7 @@ def main():
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
     
     epochs = 20
-    batch_size = 360
+    batch_size = 36
     input_shape = X_train.shape[1]
     y_train = y_train.reshape(-1, 1)
     y_val = y_val.reshape(-1, 1)  # You also need to reshape y_val
