@@ -1,3 +1,5 @@
+from typing import List, Optional
+
 class History:
     """
     History class for storing and managing loss and metrics data during model training.
@@ -8,47 +10,51 @@ class History:
     
     Attributes:
         history (dict): A dictionary containing training metrics, loss, and optionally, validation metrics and loss.
-            - 'loss': List of float values indicating the loss over epochs.
-            - 'metric': List of float values indicating the metric over epochs.
-            - 'val_loss': List of float values indicating the validation loss over epochs (if validation data provided).
-            - 'val_metric': List of float values indicating the validation metric over epochs (if validation data provided).
             
     Methods:
-        append(loss: float, metric: float, val_loss: float = None, val_metric: float = None)
-            Appends the loss and metrics for a training epoch, as well as optional validation loss and metrics.
+        append_epoch(loss: float, metrics: dict)
+            Appends the loss and metrics for a training epoch.
+        append_validation(val_loss: float, val_metrics: dict)
+            Appends the validation loss and metrics for a training epoch.
     """
     
-    def __init__(self, has_validation: bool = False):
+    def __init__(self, has_validation: bool = False, metric_names: Optional[List[str]] = None):
         self._has_validation = has_validation
-
+        self.history = {'loss': []}
+        
+        if metric_names:
+            for name in metric_names:
+                self.history[name] = []
+        
         if self._has_validation:
-            self.history = {'loss': [], 'val_loss': [], 'metric': [], 'val_metric': []}
-        else:
-            self.history = {'loss': [], 'metric': []}
+            self.history['val_loss'] = []
+            if metric_names:
+                for name in metric_names:
+                    self.history[f'val_{name}'] = []
 
-    def append_epoch(self, loss: float, metric: float) -> None:
+
+    def append_epoch(self, loss: float, metrics: dict) -> None:
         """
         Append the metrics and loss for the current epoch to the history.
         
         Args:
             loss (float): The loss for the current epoch.
-            metric (float): The metric for the current epoch.
+            metrics (dict): A dictionary containing the metrics for the current epoch.
         """
         self.history['loss'].append(loss)
-        self.history['metric'].append(metric)
-        
+        for name, val in metrics.items():
+            self.history[name].append(val)
 
-    def append_validation(self, val_loss: float, val_metric: float) -> None:
+    def append_validation(self, val_loss: float, val_metrics: dict) -> None:
         """
         Append the validation metrics and loss for the current epoch to the history.
         
         Args:
             val_loss (float): The validation loss for the current epoch.
-            val_metric (float): The validation metric for the current epoch.
+            val_metrics (dict): A dictionary containing the validation metrics for the current epoch.
         """
-        if self._has_validation:
-            self.history['val_loss'].append(val_loss)
-            self.history['val_metric'].append(val_metric)
-
+        self.history['val_loss'].append(val_loss)
+        for name, val in val_metrics.items():
+            self.history[f'val_{name}'].append(val)
 
             

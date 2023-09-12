@@ -1,24 +1,18 @@
 Basico: 
 
-    Permitir Uso de Dados de Validação no Modelo
-
-    Desenvolver Objeto para Armazenar Métricas e Losses de Treino e Validação
-
     Criar Método para Realizar Predições (Predict)
 
     Criar Método para Avaliação do Modelo (Evaluate)
 
-    Aceitar Metricas de Avaliação
-
     Implementar Metricas Como Accuracy, Precsion, Recall e F1 Score
-
-    Aceitar Múltiplas Métricas de Avaliação Simultaneamente (ex: Acurácia, Precisão, MEA, MSE)
 
     Implementar Testes Unitários e de Integração
 
-    Implementar Otimizador Adam
+    Implementar Adagrad
 
     Implementar Otimizador RMSProp
+
+    Implementar Otimizador Adam
 
     Implementar Derivada da Função de Ativação SoftMax
 

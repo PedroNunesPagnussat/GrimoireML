@@ -45,7 +45,7 @@ def build_model(input_shape: int) -> Sequential:
     model.add(Dense(8, 4, activation=ReLU()))
     model.add(Dense(4, 2, activation=ReLU()))
     model.add(Dense(2, 1, activation=Sigmoid()))
-    model.compile(optimizer=SGD(lr=0.025), loss=CCE(), metrics=[eval_functions.MSE()])
+    model.compile(optimizer=SGD(lr=0.025), loss=CCE(), metrics=[eval_functions.MSE(), eval_functions.MAE()])
     return model
 
 
@@ -80,7 +80,6 @@ def main():
     print(f"GML Time: {round(total_time, 4)}")
     print(pred, y_test[0])
 
-    print(model.history.history)
 
 if __name__ == "__main__":
     main()

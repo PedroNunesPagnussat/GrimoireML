@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import numpy as np
 from ..functions.loss_functions import LossFunction
 from ..optimizers import Optimizer
@@ -42,6 +42,7 @@ class Sequential:
 
         self._loss = loss
         self._optimizer = optimizer
+        self._metrics = metrics
         
 
     def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1, 
@@ -59,40 +60,59 @@ class Sequential:
         """
 
         num_batches = (len(X) // batch_size)
-        self.history = History(has_validation=validation_data is not None)
+
+        metric_names = [str(metric) for metric in self._metrics]
+        self.history = History(has_validation=validation_data is not None, metric_names=metric_names)
 
         for epoch in range(epochs):
             start_time = timer()
             epoch_loss = 0.0
-            epoch_metric = 0.0
+            epoch_metrics = {name: 0.0 for name in metric_names}
 
+            
             for i in range(0, len(X), batch_size):
                 batch_X = X[i:i + batch_size]
                 batch_y = y[i:i + batch_size]
                 
                 
-                batch_loss, batch_metric = self._process_batch(batch_X, batch_y)
+                batch_loss, batch_metrics = self._process_batch(batch_X, batch_y)
+                
                 epoch_loss += batch_loss
-                epoch_metric += batch_metric
+                
+                for name in metric_names:
+                    epoch_metrics[name] += batch_metrics[name]
 
-                if verbose:
-                    self._print_progress(verbose=verbose, epoch=epoch, epochs=epochs, batch=i, batch_size=batch_size, num_batches=num_batches, start_time=start_time, epoch_loss=epoch_loss, epoch_metric=epoch_metric, data_len = len(X) ,current_batch=i)
+                    if verbose:
+                        self._print_progress(
+                            verbose=verbose, 
+                            epoch=epoch, 
+                            epochs=epochs, 
+                            batch=i, 
+                            batch_size=batch_size, 
+                            num_batches=num_batches, 
+                            start_time=start_time, 
+                            epoch_loss=epoch_loss, 
+                            epoch_metrics=epoch_metrics, 
+                            current_batch=i, 
+                            data_len=len(X)
+                        )
 
             if verbose:
                 print()
 
-
-            self.history.append_epoch(epoch_loss / len(X), epoch_metric / len(X))
+            self.history.append_epoch(epoch_loss / len(X), {name: val / len(X) for name, val in epoch_metrics.items()})
 
             if validation_data:
-                val_loss, val_metric = self._evaluate_on_validation_data(validation_data)
-                self.history.append_validation(val_loss, val_metric)
+                val_loss, val_metrics = self._evaluate_on_validation_data(validation_data)
+                self.history.append_validation(val_loss, val_metrics)
 
                 if verbose:
-                    print(f" - Val Loss: {val_loss}")
+                    val_metirc_str = ", ".join([f"{name}: {val}" for name, val in val_metrics.items()]) 
+                    print(f" - Val Loss: {val_loss} - Val Metrics: [{val_metirc_str}]")
 
 
-    def _print_progress(self, verbose: int, epoch: int, epochs: int, batch: int, batch_size: int, num_batches: int, start_time: float, epoch_loss: float, epoch_metric: float, current_batch: int, data_len: int):
+
+    def _print_progress(self, verbose: int, epoch: int, epochs: int, batch: int, batch_size: int, num_batches: int, start_time: float, epoch_loss: float, epoch_metrics: Dict[str, float], current_batch: int, data_len: int):
         """
         Print training progress during each epoch and batch iteration.
         
@@ -105,24 +125,30 @@ class Sequential:
             num_batches (int): Total number of batches.
             start_time (float): Time when the current epoch started.
             epoch_loss (float): Accumulated loss for the current epoch.
-            epoch_metric (float): Accumulated metric for the current epoch.
+            epoch_metrics (Dict[str, float]): Dictionary of accumulated metrics for the current epoch.
             current_batch (int): Index of the last instance in the current batch.
             data_len (int): Total number of instances in the data.
         """
+        metric_strs = [f"{name}: {value / (current_batch+1):.8f}" for name, value in epoch_metrics.items()]
+        metrics_str = ", ".join(metric_strs)
 
         if verbose == 1:
             progress = min(current_batch + batch_size, data_len) / data_len
             num_hashes = int(progress * 25)
             bar = "#" * num_hashes + "-" * (25 - num_hashes)
-            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (current_batch+1):.8f} - METRIC NAME: {epoch_metric / (current_batch+1):.8f} - [{bar}]"
+            
+            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (current_batch+1):.8f} - Metrics: [{metrics_str}] - [{bar}]"
             print(f"{s}", end='')
+
         elif verbose == 2:
-            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (current_batch+1):.8f} - METRIC NAME: {epoch_metric / (current_batch+1):.8f}"
+
+            
+            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (current_batch+1):.8f} - Metrics: [{metrics_str}]"
             print(s, end='')
 
 
 
-    def _evaluate_on_validation_data(self, validation_data: Tuple[np.ndarray, np.ndarray]) -> Tuple[float, float]:
+    def _evaluate_on_validation_data(self, validation_data: Tuple[np.ndarray, np.ndarray]) -> Tuple[float, Dict[str, float]]:
         """
         Evaluate the model on validation data.
 
@@ -130,32 +156,36 @@ class Sequential:
             validation_data (Tuple[np.ndarray, np.ndarray]): A tuple containing the validation features and labels.
 
         Returns:
-            Tuple[float, float]: A tuple containing the validation loss and validation metric.
+            Tuple[float, Dict[str, float]]: A tuple containing the validation loss and a dictionary of validation metrics.
         """
         val_X, val_y = validation_data
         val_y_pred = self.predict(val_X)  # Assuming _forward is your prediction method
         val_loss = self._loss._compute(y_true=val_y, y_pred=val_y_pred)
-        #val_metric = self._metric._compute(y_true=val_y, y_pred=val_y_pred)  # Assuming you have a _metric attribute for evaluation
-        val_metric = 0
-        return val_loss, val_metric
+        
+        val_metrics = {}
+        for metric in self._metrics:  
+            val_metrics[str(metric)] = metric._compute(y_true=val_y, y_pred=val_y_pred)
+
+        return val_loss, val_metrics
 
 
 
-    def _process_batch(self, batch_X: np.ndarray, batch_y: np.ndarray) -> None:
+    def _process_batch(self, batch_X: np.ndarray, batch_y: np.ndarray) -> Tuple[float, Dict[str, float]]:
         """
         Process a single batch of data through forward and backward passes.
         
         Args:
             batch_X (np.ndarray): Input data for the batch.
             batch_y (np.ndarray): Corresponding labels for the batch.
+        
+        Returns:
+            Tuple[float, Dict[str, float]]: A tuple containing the batch loss and a dictionary of batch metrics.
         """
         batch_size = len(batch_X)
-
 
         for layer in self._layers:
             layer._delta = np.zeros((batch_size, layer._neurons))
             
-
         y_pred = self._forward(batch_X)  
         loss = self._loss._compute(y_true=batch_y, y_pred=y_pred)
         loss_deriv = self._loss._compute_derivative(y_true=batch_y, y_pred=y_pred)
@@ -163,8 +193,13 @@ class Sequential:
         self._backward(loss_deriv)
         self._compute_gradients(batch_X)
         self._optimizer._update(self._layers)
-        
-        return loss, 0
+
+        batch_metrics = {}
+
+        for metric in self._metrics:  
+            batch_metrics[str(metric)] = metric._compute(y_true=batch_y, y_pred=y_pred)
+
+        return loss, batch_metrics
 
 
 
