@@ -118,7 +118,7 @@ class Dense(Layer):
         Returns:
             str: Description of the dense layer.
         """
-        return f"Dense layer with Input_Shape: {self._input_shape}, Neuros: {self._neurons}, Activation Function: {self._activation} activation, and Trainable Parameters: {self._weights.size + self._bias.size}"
+        return f"Dense layer with Input_Shape: {self._input_shape}, Neurons: {self._neurons}, Activation Function: {self._activation} activation, and Trainable Parameters: {self._weights.size + self._bias.size}"
 
 
 

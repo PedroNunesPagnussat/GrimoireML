@@ -172,21 +172,20 @@ class Softmax(ActivationFunction):
             np.ndarray: The array after applying the Softmax activation function.
         """
 
-        exp_x = np.exp(x)
+        exp_x = np.exp(x - np.max(x, axis=1, keepdims=True))
         return exp_x / np.sum(exp_x, axis=1, keepdims=True)
 
     def _compute_derivative(self, x: np.ndarray) -> np.ndarray:
         """
-        Apply the derivative of the Softmax activation function to the input array.
+        Placeholder for the derivative of the Softmax activation function.
 
         Args:
             x (np.ndarray): The input array.
 
         Returns:
-            np.ndarray: The array after applying the derivative of the Softmax activation function.
+            np.ndarray: Currently returns a placeholder as the derivative is usually calculated during backpropagation.
         """
-
-        return np.ones_like(x)
+        raise NotImplementedError("Softmax derivative is not implemented.")
 
     def __str__(self) -> str:
         """

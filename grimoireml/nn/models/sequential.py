@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Tuple
 import numpy as np
 from ..functions.loss_functions import LossFunction
 from ..optimizers import Optimizer
 from ..layers import Layer
 from ...functions.evaluation_functions import EvaluationFunction
 from timeit import default_timer as timer
-from time import sleep
+from .history import History
 import pickle
 
 
@@ -18,7 +18,7 @@ class Sequential:
         self._layers = []
         
         # Summary attributes
-        self._loss_list = None
+        self.history = None
         
         
 
@@ -41,11 +41,11 @@ class Sequential:
         """
 
         self._loss = loss
-        self
         self._optimizer = optimizer
         
 
-    def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1, verbose: int = 1) -> None:
+    def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 1, batch_size: int = 1, 
+            verbose: int = 1, validation_data: Tuple[np.ndarray, np.ndarray] = None) -> None:
         """Fit the model to the data.
         
         Args:
@@ -54,43 +54,92 @@ class Sequential:
             epochs: The number of epochs.
             lr: The learning rate.
             batch_size: The batch size.
+            verbose: The verbosity level.
+            validation_data: The validation data.
         """
+
         num_batches = (len(X) // batch_size)
-        self._loss_list = np.zeros((epochs, 1))
+        self.history = History(has_validation=validation_data is not None)
 
         for epoch in range(epochs):
             start_time = timer()
             epoch_loss = 0.0
-            epoch_acc = 0.0
+            epoch_metric = 0.0
 
             for i in range(0, len(X), batch_size):
                 batch_X = X[i:i + batch_size]
                 batch_y = y[i:i + batch_size]
                 
                 
-                batch_loss, epoch_metric = self._process_batch(batch_X, batch_y)
-
+                batch_loss, batch_metric = self._process_batch(batch_X, batch_y)
                 epoch_loss += batch_loss
-                epoch_metric += epoch_metric
+                epoch_metric += batch_metric
 
+                if verbose:
+                    self._print_progress(verbose=verbose, epoch=epoch, epochs=epochs, batch=i, batch_size=batch_size, num_batches=num_batches, start_time=start_time, epoch_loss=epoch_loss, epoch_metric=epoch_metric, data_len = len(X) ,current_batch=i)
 
-                
-                if verbose == 1:
-                    progress = (i + batch_size) / len(X)
-                    num_hashes = int(progress * 25)  # Each hash represents 4% progress
-                    bar = "#" * num_hashes + "-" * (25 - num_hashes)
-
-                    s = f"\rEpoch: {epoch+1}/{epochs} Batch: {(i) // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (i+1):.8f} - METRIC NAME: {epoch_metric / (i+1):.8f} - [{bar}]"
-                    print(f"{s}", end='')
-                    
-                elif verbose == 2:
-                    s = f"\rEpoch: {epoch+1}/{epochs} Batch: {(i) // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (i+1):.8f} - METRIC NAME: {epoch_metric / (i+1):.8f}"
-                    print(s, end='')
-                
-            self._loss_list[epoch] = epoch_loss
-            
             if verbose:
                 print()
+
+
+            self.history.append_epoch(epoch_loss / len(X), epoch_metric / len(X))
+
+            if validation_data:
+                val_loss, val_metric = self._evaluate_on_validation_data(validation_data)
+                self.history.append_validation(val_loss, val_metric)
+
+                if verbose:
+                    print(f" - Val Loss: {val_loss}")
+
+
+    def _print_progress(self, verbose: int, epoch: int, epochs: int, batch: int, batch_size: int, num_batches: int, start_time: float, epoch_loss: float, epoch_metric: float, current_batch: int, data_len: int):
+        """
+        Print training progress during each epoch and batch iteration.
+        
+        Args:
+            verbose (int): Verbosity level, 1 for progress bar, 2 for one-line output.
+            epoch (int): Current epoch number.
+            epochs (int): Total number of epochs.
+            batch (int): Index of the first instance in the current batch.
+            batch_size (int): Number of instances in a batch.
+            num_batches (int): Total number of batches.
+            start_time (float): Time when the current epoch started.
+            epoch_loss (float): Accumulated loss for the current epoch.
+            epoch_metric (float): Accumulated metric for the current epoch.
+            current_batch (int): Index of the last instance in the current batch.
+            data_len (int): Total number of instances in the data.
+        """
+
+        if verbose == 1:
+            progress = min(current_batch + batch_size, data_len) / data_len
+            num_hashes = int(progress * 25)
+            bar = "#" * num_hashes + "-" * (25 - num_hashes)
+            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (current_batch+1):.8f} - METRIC NAME: {epoch_metric / (current_batch+1):.8f} - [{bar}]"
+            print(f"{s}", end='')
+        elif verbose == 2:
+            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (current_batch+1):.8f} - METRIC NAME: {epoch_metric / (current_batch+1):.8f}"
+            print(s, end='')
+
+
+
+    def _evaluate_on_validation_data(self, validation_data: Tuple[np.ndarray, np.ndarray]) -> Tuple[float, float]:
+        """
+        Evaluate the model on validation data.
+
+        Args:
+            validation_data (Tuple[np.ndarray, np.ndarray]): A tuple containing the validation features and labels.
+
+        Returns:
+            Tuple[float, float]: A tuple containing the validation loss and validation metric.
+        """
+        val_X, val_y = validation_data
+        val_y_pred = self.predict(val_X)  # Assuming _forward is your prediction method
+        val_loss = self._loss._compute(y_true=val_y, y_pred=val_y_pred)
+        #val_metric = self._metric._compute(y_true=val_y, y_pred=val_y_pred)  # Assuming you have a _metric attribute for evaluation
+        val_metric = 0
+        return val_loss, val_metric
+
+
 
     def _process_batch(self, batch_X: np.ndarray, batch_y: np.ndarray) -> None:
         """
