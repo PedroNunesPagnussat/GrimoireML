@@ -49,15 +49,7 @@ class Optimizer(ABC):
         """Return the string representation of the optimizer."""
         pass
 
-    def _initialize_momentum(self, layer: Layer) -> None:
-        """
-        Initialize the squared gradient accumulators for the weights and biases of a layer.
-        
-        Args:
-            layer (Layer): The layer for which the squared gradient accumulators are to be initialized.
-        """
-        layer._weights_momentum = np.zeros_like(layer._weights)
-        layer._bias_momentum = np.zeros_like(layer._bias)
+   
 
 
 
@@ -117,6 +109,7 @@ class Adagrad(Optimizer):
         super().__init__(lr)
         self._epsilon = 1e-8  # To prevent division by zero
 
+
     def _layer_update(self, layer: Layer) -> None:
         """
         Update the weights and biases for a single layer using the Adagrad algorithm.
@@ -135,6 +128,18 @@ class Adagrad(Optimizer):
         # Update weights and biases
         layer._weights -= self._lr / np.sqrt(layer._weights_momentum + self._epsilon) * layer._weights_grad
         layer._bias -= self._lr / np.sqrt(layer._bias_momentum + self._epsilon) * layer._bias_grad
+        
+
+    def _initialize_momentum(self, layer: Layer) -> None:
+        """
+        Initialize the squared gradient accumulators for the weights and biases of a layer.
+
+        Args:
+            layer (Layer): The layer for which the squared gradient accumulators are to be initialized.
+        """
+        layer._weights_momentum = np.zeros_like(layer._weights)
+        layer._bias_momentum = np.zeros_like(layer._bias)
+
 
     def __str__(self) -> str:
         """
@@ -144,3 +149,88 @@ class Adagrad(Optimizer):
             str: A string that shows the optimizer's name and its current learning rate.
         """
         return f"Adagrad(lr={self._lr})"
+    
+
+
+class Adam(Optimizer):
+    """
+    Adam optimizer for updating model parameters.
+    
+    Adam adapts the learning rate during training and is well-suited for dealing with sparse data.
+    
+    Attributes:
+        _lr (float): The initial learning rate.
+        _beta1 (float): The exponential decay rate for the first moment estimates.
+        _beta2 (float): The exponential decay rate for the second moment estimates.
+        _epsilon (float): A small constant to avoid division by zero in learning rate adaptation.
+    """
+
+    def __init__(self, lr: float = 0.01, beta1: float = 0.9, beta2: float = 0.999):
+        """
+        Initialize the Adam optimizer.
+
+        Args:
+            lr (float): The initial learning rate.
+            beta1 (float): The exponential decay rate for the first moment estimates.
+            beta2 (float): The exponential decay rate for the second moment estimates.
+        """
+    
+        super().__init__(lr)
+        self._beta1 = 0.9
+        self._beta2 = 0.999
+        self._epsilon = 1e-8
+
+    
+    def _layer_update(self, layer: Layer) -> None:
+        """
+        Update the weights and biases for a single layer using the Adam algorithm.
+        
+        Args:
+            layer (Layer): The layer whose parameters are to be updated.
+        """
+
+        # Initialize momentum and velocity if they don't exist
+        if not hasattr(layer, "_m"):
+            self._initialize_attrs(layer)
+
+        # Compute Weight Update
+        layer._m = self._beta1 * layer._m + (1 - self._beta1) * layer._weights_grad
+        layer._v = self._beta2 * layer._v + (1 - self._beta2) * np.square(layer._weights_grad)
+
+        m_hat = layer._m / (1 - self._beta1)
+        v_hat = layer._v / (1 - self._beta2)
+
+        layer._weights -= self._lr * (m_hat / (np.sqrt(v_hat) + self._epsilon)) 
+
+        # Compute Bias Update
+        layer._bias_m = self._beta1 * layer._bias_m + (1 - self._beta1) * layer._bias_grad  
+        layer._bias_v = self._beta2 * layer._bias_v + (1 - self._beta2) * np.square(layer._bias_grad) 
+
+        bias_m_hat = layer._bias_m / (1 - self._beta1)
+        bias_v_hat = layer._bias_v / (1 - self._beta2)
+        
+        layer._bias -= self._lr * (bias_m_hat / (np.sqrt(bias_v_hat) + self._epsilon))
+
+
+
+    def _initialize_attrs(self, layer: Layer) -> None:
+        """
+        Initialize the momentum and velocity for the weights and biases of a layer.
+
+        Args:
+            layer (Layer): The layer for which the momentum and velocity are to be initialized.
+        """
+        layer._m = np.zeros_like(layer._weights)
+        layer._v = np.zeros_like(layer._weights)
+        layer._bias_m = np.zeros_like(layer._bias)
+        layer._bias_v = np.zeros_like(layer._bias)
+
+
+    def __str__(self) -> str:
+        """
+        Return the string representation of the optimizer.
+        
+        Returns:
+            str: A string that shows the optimizer's name and its current learning rate.
+        """
+        return f"Adam(lr={self._lr}, beta1={self._beta1}, beta2={self._beta2})"
