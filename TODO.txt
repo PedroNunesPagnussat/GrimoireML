@@ -8,8 +8,6 @@ Basico:
 
     Implementar Testes Unitários e de Integração
 
-    Implementar Adagrad
-
     Implementar Otimizador RMSProp
 
     Implementar Otimizador Adam
@@ -18,9 +16,11 @@ Basico:
 
     Histograma dos Pesos
 
-Avançado:
+    Implementar Dropout
 
-    Implementar Early Stopping
+    Implementar EarlyStop
+
+Avançado:
 
     Permitir Checkpoints Durante o Treinamento
 
