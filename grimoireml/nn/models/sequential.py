@@ -107,8 +107,8 @@ class Sequential:
                 self.history.append_validation(val_loss, val_metrics)
 
                 if verbose:
-                    val_metirc_str = ", ".join([f"{name}: {val}" for name, val in val_metrics.items()]) 
-                    print(f" - Val Loss: {val_loss} - Val Metrics: [{val_metirc_str}]")
+                    val_metirc_str = ", ".join([f"{name}: {val:.5f}" for name, val in val_metrics.items()]) 
+                    print(f" - Val Loss: {val_loss:.5f} - Val Metrics: [{val_metirc_str}]")
 
 
 
@@ -129,7 +129,7 @@ class Sequential:
             current_batch (int): Index of the last instance in the current batch.
             data_len (int): Total number of instances in the data.
         """
-        metric_strs = [f"{name}: {value / (current_batch+1):.8f}" for name, value in epoch_metrics.items()]
+        metric_strs = [f"{name}: {(value / (current_batch+1)):.5f}" for name, value in epoch_metrics.items()]
         metrics_str = ", ".join(metric_strs)
 
         if verbose == 1:
@@ -137,14 +137,14 @@ class Sequential:
             num_hashes = int(progress * 25)
             bar = "#" * num_hashes + "-" * (25 - num_hashes)
             
-            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (current_batch+1):.8f} - Metrics: [{metrics_str}] - [{bar}]"
-            print(f"{s}", end='')
+            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.4f}s - Loss: {epoch_loss / (current_batch+1):.5f} - Metrics: [{metrics_str}] - [{bar}]"
+            print(f"{s}", end='\r')
 
         elif verbose == 2:
 
             
-            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.2f}s - Loss: {epoch_loss / (current_batch+1):.8f} - Metrics: [{metrics_str}]"
-            print(s, end='')
+            s = f"\r Epoch: {epoch+1}/{epochs} Batch: {batch // batch_size}/{num_batches} - Epoch Time: {timer() - start_time:.4f}s - Loss: {epoch_loss / (current_batch+1):.5f} - Metrics: [{metrics_str}]"
+            print(s, end='\r')
 
 
 

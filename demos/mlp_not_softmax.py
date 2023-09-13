@@ -16,7 +16,7 @@ from grimoireml.nn.models.sequential import Sequential
 
 from grimoireml.nn.layers import Dense
 from grimoireml.nn.functions.activation_functions import Sigmoid, ReLU
-from grimoireml.nn.optimizers import SGD
+from grimoireml.nn.optimizers import SGD, Adagrad
 from grimoireml.nn.functions.loss_functions import BCE, CCE
 
 import grimoireml.functions.evaluation_functions as eval_functions
@@ -45,7 +45,7 @@ def build_model(input_shape: int) -> Sequential:
     model.add(Dense(8, 4, activation=ReLU()))
     model.add(Dense(4, 2, activation=ReLU()))
     model.add(Dense(2, 1, activation=Sigmoid()))
-    model.compile(optimizer=SGD(lr=0.025), loss=CCE(), metrics=[eval_functions.MSE(), eval_functions.MAE()])
+    model.compile(optimizer=Adagrad(lr=0.05), loss=CCE(), metrics=[eval_functions.MSE()])
     return model
 
 

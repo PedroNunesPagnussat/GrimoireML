@@ -19,7 +19,7 @@ from grimoireml.nn.models.sequential import Sequential
 from grimoireml.nn.models.load_model import load_model
 from grimoireml.nn.layers import Dense
 from grimoireml.nn.functions.activation_functions import ReLU, Softmax
-from grimoireml.nn.optimizers import SGD
+from grimoireml.nn.optimizers import SGD, Adagrad
 from grimoireml.nn.functions.loss_functions import CCE
 from grimoireml.nn.initializers.bias_initializers import ZerosBiasInitializer
 from grimoireml.nn.initializers.weight_initializers import GlorotUniformWeightInitializer
@@ -59,7 +59,7 @@ def build_model(input_shape: int) -> Sequential:
     model.add(Dense(32, 10, activation=Softmax()))
 
 
-    model.compile(optimizer=SGD(lr=0.05), loss=CCE())
+    model.compile(optimizer=Adagrad(lr=0.05), loss=CCE())
     return model
 
 
