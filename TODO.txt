@@ -1,7 +1,5 @@
 Basico: 
 
-    Criar Método para Realizar Predições (Predict)
-
     Criar Método para Avaliação do Modelo (Evaluate)
 
     Implementar Metricas Como Accuracy, Precsion, Recall e F1 Score
@@ -9,8 +7,6 @@ Basico:
     Implementar Testes Unitários e de Integração
 
     Implementar Otimizador RMSProp
-
-    Implementar Otimizador Adam
 
     Implementar Derivada da Função de Ativação SoftMax
 

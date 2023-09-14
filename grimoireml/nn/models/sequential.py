@@ -241,7 +241,7 @@ class Sequential:
             inputs = layer._output
 
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, input: np.ndarray) -> np.ndarray:
         """Make predictions based on the input data.
         
         Args:
@@ -250,7 +250,10 @@ class Sequential:
         Returns:
             The predictions.
         """
-        return self._forward(X)
+        for layer in self._layers:
+            input = layer._predict(input)
+        
+        return np.round(input)
     
     def evaluate(self, X: np.ndarray, y: np.ndarray) -> float:
         """Evaluate the model on the given data.
@@ -263,7 +266,12 @@ class Sequential:
             The loss value.
         """
         y_pred = self.predict(X)
-        return self._loss._compute(y_true=y, y_pred=y_pred)
+        metrics = {str(metric): metric._compute(y_true=y, y_pred=y_pred) for metric in self._metrics}
+
+        # Hard Code Accuracy
+        metrics = np.round(np.sum(y_pred == y) / len(y), 2)
+
+        return metrics, self._loss._compute(y_true=y, y_pred=y_pred)
     
 
 

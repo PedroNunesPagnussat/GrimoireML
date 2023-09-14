@@ -110,6 +110,7 @@ class Adagrad(Optimizer):
         self._epsilon = 1e-8  # To prevent division by zero
 
 
+
     def _layer_update(self, layer: Layer) -> None:
         """
         Update the weights and biases for a single layer using the Adagrad algorithm.
@@ -179,6 +180,19 @@ class Adam(Optimizer):
         self._beta1 = 0.9
         self._beta2 = 0.999
         self._epsilon = 1e-8
+        self._t = 0  # timestep
+
+
+    def _update(self, layers: List[Layer]) -> None:
+        """
+        Update the weights and biases for each layer in the list.
+        
+        Args:
+            layers (List[Layer]): List of layers to be updated.
+        """
+        self._t += 1
+        for layer in layers:
+            self._layer_update(layer)
 
     
     def _layer_update(self, layer: Layer) -> None:
@@ -197,8 +211,8 @@ class Adam(Optimizer):
         layer._m = self._beta1 * layer._m + (1 - self._beta1) * layer._weights_grad
         layer._v = self._beta2 * layer._v + (1 - self._beta2) * np.square(layer._weights_grad)
 
-        m_hat = layer._m / (1 - self._beta1)
-        v_hat = layer._v / (1 - self._beta2)
+        m_hat = layer._m / (1 - (self._beta1 ** self._t))
+        v_hat = layer._v / (1 - (self._beta2 ** self._t))
 
         layer._weights -= self._lr * (m_hat / (np.sqrt(v_hat) + self._epsilon)) 
 
@@ -208,7 +222,7 @@ class Adam(Optimizer):
 
         bias_m_hat = layer._bias_m / (1 - self._beta1)
         bias_v_hat = layer._bias_v / (1 - self._beta2)
-        
+
         layer._bias -= self._lr * (bias_m_hat / (np.sqrt(bias_v_hat) + self._epsilon))
 
 

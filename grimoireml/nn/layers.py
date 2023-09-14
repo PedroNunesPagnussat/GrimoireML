@@ -20,6 +20,58 @@ class Layer(ABC):
         """Return the string representation of the layer."""
         pass
 
+    @abstractmethod
+    def _forward(self, input: np.ndarray) -> np.ndarray:
+        """
+        Perform the forward pass.
+        
+        Args:
+            input (np.ndarray): Input data.
+            
+        Returns:
+            np.ndarray: Output of the layer.
+        """
+        pass
+
+    @abstractmethod
+    def _backward(self, error: np.ndarray) -> np.ndarray:
+        """
+        Perform the backward pass.
+        
+        Args:
+            error (np.ndarray): Error term.
+            
+        Returns:
+            np.ndarray: Error term for the previous layer.
+        """
+        pass
+
+    @abstractmethod
+    def _compute_gradients(self, input: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Compute the gradients for the layer.
+        
+        Args:
+            input (np.ndarray): Input data.
+            
+        Returns:
+            Tuple[np.ndarray, np.ndarray]: Gradients for the weights and bias.
+        """
+        pass
+
+
+    @abstractmethod
+    def _predict(self, input: np.ndarray) -> np.ndarray:
+        """
+        Perform the forward pass, this is not important in the .
+        
+        Args:
+            input (np.ndarray): Input data.
+            
+        Returns:
+            np.ndarray: Output of the layer.
+        """
+        pass
 
 class Dense(Layer):
     """
@@ -71,6 +123,20 @@ class Dense(Layer):
         """
         Perform the forward pass.
         
+        Args:
+            input (np.ndarray): Input data.
+            
+        Returns:
+            np.ndarray: Output of the layer.
+        """
+        self._sum = np.dot(input, self._weights) + self._bias
+        self._output = self._activation._compute(self._sum)
+        return self._output
+    
+    def _predict(self, input: np.ndarray) -> np.ndarray:
+        """
+        Perform the forward pass, this is not important in this layer.
+    
         Args:
             input (np.ndarray): Input data.
             
