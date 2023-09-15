@@ -185,7 +185,14 @@ class Softmax(ActivationFunction):
         Returns:
             np.ndarray: Currently returns a placeholder as the derivative is usually calculated during backpropagation.
         """
-        raise NotImplementedError("Softmax derivative is not implemented.")
+        s = self._compute(x)
+
+        outer_product = np.outer(s, s)
+        diagonal = np.diag(s)
+        jacobian = diagonal - outer_product
+
+        exit()
+        return jacobian
 
     def __str__(self) -> str:
         """
@@ -281,3 +288,11 @@ class LeakyReLU(ActivationFunction):
             str: The name of the activation function.
         """
         return f"LeakyReLU(alpha={self.alpha})"
+    
+
+if __name__ == "__main__":
+    f = Softmax()
+    x = np.array([[-1.67929273, 0.14487926]])
+    jacobian_matrix = f._compute_derivative(x)
+    print("Jacobian matrix:")
+    print(jacobian_matrix)

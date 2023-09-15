@@ -190,6 +190,12 @@ class Sequential:
         loss = self._loss._compute(y_true=batch_y, y_pred=y_pred)
         loss_deriv = self._loss._compute_derivative(y_true=batch_y, y_pred=y_pred)
         
+
+        # print(loss_deriv.shape)
+        # print(loss_deriv)
+    
+        loss_deriv = np.mean(loss_deriv, axis=0, keepdims=True)
+
         self._backward(loss_deriv)
         self._compute_gradients(batch_X)
         self._optimizer._update(self._layers)
@@ -253,7 +259,7 @@ class Sequential:
         for layer in self._layers:
             input = layer._predict(input)
         
-        return np.round(input)
+        return input
     
     def evaluate(self, X: np.ndarray, y: np.ndarray) -> float:
         """Evaluate the model on the given data.
@@ -269,7 +275,7 @@ class Sequential:
         metrics = {str(metric): metric._compute(y_true=y, y_pred=y_pred) for metric in self._metrics}
 
         # Hard Code Accuracy
-        metrics = np.round(np.sum(y_pred == y) / len(y), 2)
+        metrics = self._metrics[0]._compute(y_true=y, y_pred=y_pred)
 
         return metrics, self._loss._compute(y_true=y, y_pred=y_pred)
     

@@ -73,6 +73,7 @@ class Layer(ABC):
         """
         pass
 
+
 class Dense(Layer):
     """
     Class representing a dense layer in a neural network.
@@ -119,6 +120,7 @@ class Dense(Layer):
         self._weights_grad = None
         self._bias_grad = None
 
+
     def _forward(self, input: np.ndarray) -> np.ndarray:
         """
         Perform the forward pass.
@@ -133,6 +135,7 @@ class Dense(Layer):
         self._output = self._activation._compute(self._sum)
         return self._output
     
+
     def _predict(self, input: np.ndarray) -> np.ndarray:
         """
         Perform the forward pass, this is not important in this layer.
@@ -176,6 +179,7 @@ class Dense(Layer):
         self._weights_grad = np.dot(input.T, self._delta)
         self._bias_grad = np.sum(self._delta, axis=0)
         return self._weights_grad, self._bias_grad
+
 
     def __str__(self) -> str:
         """

@@ -71,7 +71,7 @@ class MSE(LossFunction):
         Returns:
             np.ndarray: The calculated MSE loss.
         """
-        return np.mean((y_true - y_pred) ** 2)
+        return np.mean((y_true - y_pred) ** 2) 
 
     def _compute_derivative(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
