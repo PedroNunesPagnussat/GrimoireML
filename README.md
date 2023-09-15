@@ -1,8 +1,16 @@
-# GrimoireML
+# GrimoireML: An Educational Open-Source Hub for Machine Learning Exploration
 
 <img src="https://github.com/PedroNunesPagnussat/GrimoireML/blob/a2f0a5d8fd47ec7734ea2e581f3f4a4e328a2140/imgs/logo.png" width="256">
 
-GrimoireML is an open-source side project aimed at exploring and experimenting with machine learning and data science. It's a playground for enthusiasts, learners, and anyone interested in diving into the world of data. Feel free to explore, contribute, or just have fun with it!
+
+GrimoireML is an open-source project specifically designed for educational exploration in the field of machine learning and data science. Our goal is to implement and understand the underlying mechanics of machine learning by providing a platform where algorithms are implemented from the ground up, using only mathematical operations.
+
+Important Note: Not for Production Use
+GrimoireML is crafted exclusively for educational and experimental purposes. It is not optimized for performance or scalability and should not be used in production environments.
+
+Who is it for?
+Math Enthusiasts: If you've ever wondered how machine learning algorithms work at their core, GrimoireML is your playground.
+Learners: Ideal for students, educators, or anyone looking to gain a fundamental understanding of machine learning through mathematics.
 
 
 ## Installation
@@ -10,8 +18,10 @@ GrimoireML is an open-source side project aimed at exploring and experimenting w
 You can clone the repository and install GrimoireML locally:
 
 ```bash
-pip install grimoireml
+git clone https://github.com/PedroNunesPagnussat/GrimoireML
 ```
+
+The source code is located at GrimoireML/grimoireml/src
 
 ## Importing
 
@@ -20,6 +30,7 @@ import grimoireml as gml
 
 # Now you can use the 'gml' alias to access GrimoireML's functions and classes
 ```
+Note: this can only be used in the same directory
 
 ## Contributing
 
@@ -34,7 +45,7 @@ Do you have any questions or run into issues? Open an issue on our [GitHub repos
 
 ## Acknowledgements
 
-A big shoutout to everyone who has played around with GrimoireML, shared ideas or contributed in any way.
+To my Professor Lucas Silveira Kupssinsku and my classmates how helped with the math concepts 
 
 ### Inspiration
 
