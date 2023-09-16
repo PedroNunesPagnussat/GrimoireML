@@ -1,4 +1,4 @@
-from src.Functions.EvaluationFunctions.Classification.classification_evaluation_function import ClassificationEvaluationFunction
+from grimoireml.Functions.EvaluationFunctions.Classification.classification_evaluation_function import ClassificationEvaluationFunction
 import numpy as np
 
 

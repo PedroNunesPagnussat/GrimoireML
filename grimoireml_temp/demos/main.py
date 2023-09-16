@@ -7,6 +7,7 @@ sys.path.append(
 os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
 from src.Functions.DistanceFunctions import EuclidianDistance
+from src.Functions.EvaluationFunctions import Accuracy
 
 
 

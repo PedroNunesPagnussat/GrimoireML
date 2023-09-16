@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from src.Functions.function import Function
+from grimoireml.Functions.function import Function
 
 
 class DistanceFunction(Function, ABC):

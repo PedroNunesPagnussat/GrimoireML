@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.Functions.function import Function
+from grimoireml.Functions.function import Function
 import numpy as np
 
 
