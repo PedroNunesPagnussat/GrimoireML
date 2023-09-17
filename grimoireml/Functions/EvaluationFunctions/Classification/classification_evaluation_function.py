@@ -7,21 +7,14 @@ class ClassificationEvaluationFunction(Function, ABC):
     """This is the base class for all classification evaluation functions"""
 
     @abstractmethod
-    def __init__(self, type: str, threshold: float = 0.5) -> None:
-        types = {
-            "binary": 0,
-            "multiclass": 1,
-            "multilabel": 2
-        }
-        
-        if type not in types:
-            raise ValueError("Invalid type")
-        
-        self._type = types[type]
-        self._threshold = threshold
-        
+    def __init__(self, prediction_type: str, threshold: float = 0.5) -> None:
+        prediction__types = {"binary": 0, "multiclass": 1, "multilabel": 2}
 
-        
+        if prediction_type not in prediction__types:
+            raise ValueError("Invalid type")
+
+        self.prediction_type = prediction__types[prediction_type]
+        self._threshold = threshold
 
     @abstractmethod
     def __call__(self, y: float, y_hat: float) -> float:
@@ -33,20 +26,12 @@ class ClassificationEvaluationFunction(Function, ABC):
         """This method is called when the function is printed"""
         pass
 
-
-
-
     def _get_prediction(self, y_pred: np.ndarray) -> np.ndarray:
-        """This method is get the predicted values from the probability vector based on the type of classification"""
+        """This method get the predicted values from the probability vector
+        based on the type of classification"""
 
-        if self._type == 1:
+        if self.prediction_type == 1:
             return np.argmax(y_pred, axis=1)
-        
-        elif self._type == 0 or self._type == 2:
+
+        elif self.prediction_type == 0 or self.prediction_type == 2:
             return np.where(y_pred >= self._threshold, 1, 0)
-        
-        
-
-
-
-

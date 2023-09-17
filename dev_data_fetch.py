@@ -1,8 +1,9 @@
 from sklearn import datasets
 
+
 def iris():
     iris = datasets.load_iris()
-    X, y = iris.data, iris.target   
+    X, y = iris.data, iris.target
 
     return X, y
 
@@ -26,7 +27,6 @@ def mnist():
     X, y = mnist.data, mnist.target
 
     return X, y
-
 
 
 def fetch_data(dataset: str):

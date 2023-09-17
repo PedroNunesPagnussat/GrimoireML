@@ -1,4 +1,6 @@
 # path from root: grimoireml/NeuralNetwork/LossFunctions
 
-# import MAE
-from grimoireml.NeuralNetwork.LossFunctions.mse import MeanSquaredError as MSELoss
+
+from grimoireml.NeuralNetwork.LossFunctions.mse import (  # noqa: F401
+    MeanSquaredError as MSELoss,  # noqa: F401
+)  # noqa: F401
