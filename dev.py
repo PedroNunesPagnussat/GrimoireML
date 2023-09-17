@@ -7,9 +7,14 @@ import numpy as np
 
 
 
-distance = EuclideanDistance()
+distance = ManhattanDistance()
 arr = np.array([[1, 2], [3, 2], [3, 20]])
-print(distance.distance_matrix(arr))
+arr2 = np.array([[10, 2], [3, 2], [3, 20]])
+
+
+print(distance.distance_matrix(arr, arr2))
+# print(distance_matrix(arr, arr2, "taxicab"))
+
 exit()
 
 x = np.array([[1, 2], [3, 2], [3, 20]])

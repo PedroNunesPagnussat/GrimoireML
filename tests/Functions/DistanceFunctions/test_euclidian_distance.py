@@ -67,16 +67,22 @@ def test_euclidean_distance_within_range_multiple_points(x, y, threshold, expect
     assert np.all(euclidean_distance.within_range(x, y, threshold) == pytest.approx(expected, 0.01))
 
 
-@pytest.mark.parametrize("x, expected", [
-    (np.array([[1, 2], [3, 2], [3, 20]]), np.array([
+@pytest.mark.parametrize("x, y, expected", [
+    (np.array([[1, 2], [3, 2], [3, 20]]), None, np.array([
         [0.0, 2.0, 18.11077],
         [2.0, 0, 18.0],
         [18.11077, 18.0, 0.0]
     ])),
+
+    (np.array([[1, 2], [3, 2], [3, 20]]), np.array([[10, 2], [3, 2], [3, 20]]), np.array([
+        [9.0, 2.0, 18.11077],
+        [7.0, 0, 18.0],
+        [19.31320792, 18.0, 0.0]
+    ])),    
 ])
 
 
-def test_euclidean_distance_matrix(x, expected):
+def test_euclidean_distance_matrix(x, y, expected):
     euclidean_distance = EuclideanDistance()
-    assert np.all(euclidean_distance.distance_matrix(x) == pytest.approx(expected, 0.01))
+    assert np.all(euclidean_distance.distance_matrix(x, y) == pytest.approx(expected, 0.01))
 

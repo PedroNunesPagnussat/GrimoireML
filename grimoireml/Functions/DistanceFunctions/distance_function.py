@@ -26,6 +26,10 @@ class DistanceFunction(Function, ABC):
 
         return np.where(self(x, y) <= threshold, True, False)    
 
-    def distance_matrix(self, x: np.ndarray) -> np.ndarray:
+    def distance_matrix(self, x: np.ndarray, y: np.ndarray = None) -> np.ndarray:
         """This method calculates the distance matrix between two sets of points"""
-        return np.array([[self(x_i, y_j) for y_j in x] for x_i in x])
+
+        if y is None:
+            y = x
+
+        return np.array([[self(x_i, y_j) for y_j in y] for x_i in x])
