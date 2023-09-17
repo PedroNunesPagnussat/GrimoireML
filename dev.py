@@ -1,27 +1,20 @@
 from grimoireml.Functions.DistanceFunctions import EuclideanDistance, ManhattanDistance
 from grimoireml.Functions.EvaluationFunctions import Accuracy
+from grimoireml.Cluster import DBSCAN
 
-from scipy.spatial import distance_matrix
+
+from dev_data_fetch import fetch_data
 import numpy as np
 
 
 
 
-distance = ManhattanDistance()
-arr = np.array([[1, 2], [3, 2], [3, 20]])
-arr2 = np.array([[10, 2], [3, 2], [3, 20]])
+# fetch iris dataset
+
+X, y = fetch_data("iris")
 
 
-print(distance.distance_matrix(arr, arr2))
-# print(distance_matrix(arr, arr2, "taxicab"))
 
-exit()
+db = DBSCAN()
+db.fit(X)
 
-x = np.array([[1, 2], [3, 2], [3, 20]])
-y = np.array([[1, 2], [3, 2], [3, 20]])
-
-print(distance(x, y))
-print(distance.within_range(x, y, 16))
-print(distance.distance_matrix(x))
-
-print(dist.cdist(x, y, 'cityblock'))
