@@ -2,7 +2,8 @@
 
 # distance functions
 from grimoireml.Functions.DistanceFunctions import (
-    EuclidianDistance
+    EuclideanDistance,
+    ManhattanDistance
 ) 
 
 # Classification Evaluation functions

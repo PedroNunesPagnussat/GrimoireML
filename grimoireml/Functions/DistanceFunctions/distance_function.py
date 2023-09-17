@@ -3,6 +3,7 @@ import numpy as np
 from grimoireml.Functions.function import Function
 
 
+
 class DistanceFunction(Function, ABC):
     """This is the base class for all distance functions"""
 
@@ -18,11 +19,13 @@ class DistanceFunction(Function, ABC):
         pass
 
 
-    def within_threshold(self, x: np.array, y: np.array, threshold) -> bool:
+    def within_range(self, x: np.array, y: np.array, threshold) -> bool:
         """This method checks if the distance between two points is within the threshold"""
-        return self(x, y) <= threshold
-    
+        if y.ndim == 1:
+            self(x, y) <= threshold
 
-    def get_distance_matrix(self, x: np.ndarray, y: np.ndarray) -> np.ndarray:
+        return np.where(self(x, y) <= threshold, True, False)    
+
+    def distance_matrix(self, x: np.ndarray) -> np.ndarray:
         """This method calculates the distance matrix between two sets of points"""
-        return np.array([[self(x_i, y_j) for y_j in y] for x_i in x]) 
+        return np.array([[self(x_i, y_j) for y_j in x] for x_i in x])

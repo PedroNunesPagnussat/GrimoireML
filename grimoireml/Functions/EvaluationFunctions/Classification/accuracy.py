@@ -1,3 +1,5 @@
+
+
 from grimoireml.Functions.EvaluationFunctions.Classification.classification_evaluation_function import ClassificationEvaluationFunction
 import numpy as np
 
@@ -7,18 +9,20 @@ class Accuracy(ClassificationEvaluationFunction):
         super().__init__(type, threshold)
 
 
-    def __call__(self, y: float, y_hat: float) -> float:
+    def __call__(self, y: float, y_hat: float, adjust_y: bool = False) -> float:
         """This method is what calculates the evaluation of a point"""
         
-        if self._type == 0:
+        if adjust_y:
+            y = super()._get_prediction(y)
+
+        
+        if self._type == 0 or self._type == 1:
             return np.mean(y == y_hat)
         
-        elif self._type == 1:
-            return np.mean(np.argmax(y, axis=1) == y_hat)
-        
         elif self._type == 2:
-            return np.mean(np.all(y == y_hat, axis=1))
-        
+            return np.mean(y == y_hat)
+
+        return -1        
 
     def __str__(self) -> str:
         """This method is called when the function is printed"""

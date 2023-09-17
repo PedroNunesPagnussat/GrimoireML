@@ -21,6 +21,8 @@ class ClassificationEvaluationFunction(Function, ABC):
         self._threshold = threshold
         
 
+        
+
     @abstractmethod
     def __call__(self, y: float, y_hat: float) -> float:
         """This method is what calculates the evaluation of a point"""
@@ -30,6 +32,8 @@ class ClassificationEvaluationFunction(Function, ABC):
     def __str__(self) -> str:
         """This method is called when the function is printed"""
         pass
+
+
 
 
     def _get_prediction(self, y_pred: np.ndarray) -> np.ndarray:
