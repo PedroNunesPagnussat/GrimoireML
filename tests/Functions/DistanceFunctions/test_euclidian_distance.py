@@ -3,13 +3,7 @@ import pytest
 import sys
 import os
 
-#print the path that python looks for modules in
-# Get the current script directory
-
-
 current_script_directory = os.path.dirname(os.path.realpath(__file__))
-
-# Get the parent directory (project_root) and add it to sys.path
 project_root_directory = os.path.abspath(os.path.join(current_script_directory, '..', '..', '..'))
 sys.path.append(project_root_directory)
 from grimoireml.Functions.DistanceFunctions import EuclideanDistance  # Assuming this is the correct import path

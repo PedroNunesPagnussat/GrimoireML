@@ -3,13 +3,7 @@ import pytest
 import sys
 import os
 
-#print the path that python looks for modules in
-# Get the current script directory
-
-
 current_script_directory = os.path.dirname(os.path.realpath(__file__))
-
-# Get the parent directory (project_root) and add it to sys.path
 project_root_directory = os.path.abspath(os.path.join(current_script_directory, '..', '..', '..'))
 sys.path.append(project_root_directory)
 from grimoireml.Functions.DistanceFunctions import ManhattanDistance  # Assuming this is the correct import path
@@ -62,8 +56,6 @@ def test_Manhattan_distancem_within_range_single_point(x, y, threshold, expected
 ])
 
 def test_Manhattan_distancem_within_range_multiple_points(x, y, threshold, expected):
-    from icecream import ic
-    ic(x, y, threshold, expected)
     Manhattan_distancem = ManhattanDistance()
     assert np.all(Manhattan_distancem.within_range(x, y, threshold) == pytest.approx(expected, 0.01))
 

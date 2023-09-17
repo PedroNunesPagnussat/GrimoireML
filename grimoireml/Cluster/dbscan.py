@@ -1,6 +1,3 @@
-from icecream import ic
-
-
 import numpy as np
 
 
