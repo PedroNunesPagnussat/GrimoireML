@@ -1,7 +1,5 @@
 from sklearn import datasets
 
-
-
 def iris():
     iris = datasets.load_iris()
     X, y = iris.data, iris.target   

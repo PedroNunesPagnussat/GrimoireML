@@ -47,6 +47,7 @@ class DBSCAN():
         self._points = np.array([DBSCAN.Point(data) for data in self._X], dtype=DBSCAN.Point)
         self.n_clusters = 0
         self._dbscan()
+        self.clusters = np.array([point.cluster for point in self._points])
 
         return self.clusters
 
@@ -64,15 +65,13 @@ class DBSCAN():
             
             mask = self._distance_function.within_range(point.data, self._X, self._epsilon)
             neighbors = self._points[mask]
-
-            # Chck performance and accuracy of this
             neighbors = neighbors[neighbors != point]
 
             if len(neighbors) < self._min_points:
                 continue
 
-            self.n_clusters += 1
             self._expand_cluster(point, neighbors)
+            self.n_clusters += 1
 
 
 
@@ -95,7 +94,6 @@ class DBSCAN():
 
             neighbor_neighbors_mask = self._distance_function.within_range(neighbor.data, self._X, self._epsilon)
             neighbor_neighbors = self._points[neighbor_neighbors_mask]
-            # Chck performance and accuracy of this
             neighbor_neighbors = neighbor_neighbors[neighbor_neighbors != neighbor]
 
             if len(neighbor_neighbors) >= self._min_points:

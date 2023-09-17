@@ -11,10 +11,4 @@ import numpy as np
 
 # fetch iris dataset
 
-X, y = fetch_data("iris")
-
-
-
-db = DBSCAN()
-db.fit(X)
 
