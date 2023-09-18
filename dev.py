@@ -9,9 +9,10 @@ import torch
 from icecream import ic
 
 
-x = Dense(output_shape=5, input_shape=(3,))
-ic(str(x))
-x = Dense(10)(x)
-ic(str(x))
-x = Dense(5)(x)
-ic(str(x))
+layer = Dense(output_shape=1, input_shape=(3,))
+layer.weights = np.array([[0.7], [-0.1], [0.2]])
+layer._input_data = np.array([[0.567, 0.572, 0.443]])
+# accumulated_error = np.ndarray([[-0.022702]])
+accumulated_error = np.array([[-0.022702]])
+propagate_error = layer._backward(accumulated_error)
+expected_propagate_error = np.array([[-0.01588914, 0.0022702, -0.0045404]])

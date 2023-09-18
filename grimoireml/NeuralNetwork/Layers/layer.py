@@ -11,18 +11,23 @@ class Layer(ABC):
         self.output_shape = output_shape
 
     @abstractmethod
-    def __call__(self, input_layer: 'Layer') -> 'Layer':
+    def __call__(self, input_layer: "Layer") -> "Layer":
         """This method will be called when the object is called"""
         pass
 
     @abstractmethod
-    def forward(self, input_data: np.ndarray) -> np.ndarray:
+    def _forward(self, input_data: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
         pass
 
     @abstractmethod
-    def backward(self, output_data: np.ndarray) -> np.ndarray:
+    def _backward(self, output_data: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
+        pass
+
+    @abstractmethod
+    def predict(self, learning_rate: float) -> None:
+        """This will be used to predict the output of the layer"""
         pass
 
     @abstractmethod

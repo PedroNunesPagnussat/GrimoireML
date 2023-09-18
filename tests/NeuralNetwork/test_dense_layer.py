@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
-from grimoireml.NeuralNetwork.Layers import Dense  # Replace `your_module_path` with the actual module path
+from grimoireml.NeuralNetwork.Layers import (
+    Dense,
+)  # Replace `your_module_path` with the actual module path
 
 np.random.seed(42)
 
@@ -29,7 +31,7 @@ def test_forward_pass():
     layer.bias = np.array([[0, 0, 0]])
     input_data = np.array([0.5, 0.1])
 
-    output = layer.forward(input_data)
+    output = layer._forward(input_data)
     expected_output = np.array([0.27, 0.29, -0.23])
 
     assert np.allclose(output, expected_output, atol=1e-5)
@@ -39,13 +41,16 @@ def test_backward_pass():
     layer = Dense(output_shape=1, input_shape=(3,))
     layer.weights = np.array([[0.7], [-0.1], [0.2]])
     layer._input_data = np.array([[0.567, 0.572, 0.443]])
-    accumulated_error = -0.022702
-
-    propagate_error = layer.backward(accumulated_error)
+    accumulated_error = np.array([[-0.022702]])
+    propagate_error = layer._backward(accumulated_error)
     expected_propagate_error = np.array([[-0.01588914, 0.0022702, -0.0045404]])
 
     from icecream import ic
+
     ic(layer._weight_gradient)
     assert np.allclose(propagate_error, expected_propagate_error, atol=1e-5)
-    assert np.allclose(layer._weight_gradient, np.array([[-0.01288914], [0.0022702], [-0.0045404]]), atol=0.016)
-
+    assert np.allclose(
+        layer._weight_gradient,
+        np.array([[-0.01288914], [0.0022702], [-0.0045404]]),
+        atol=0.016,
+    )
