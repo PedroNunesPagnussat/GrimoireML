@@ -7,11 +7,13 @@ class MeanSquaredError(LossFunction):
 
     def __call__(self, y_hat: np.ndarray, y: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
+        from icecream import ic
+        return 0.5 * np.sum((y_hat - y) ** 2)
         return np.mean((y_hat - y) ** 2)
 
     def derivative(self, y_hat: np.ndarray, y: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
-        return (y_hat - y) / y.shape[0]
+        return (2 / y.size) * np.sum((y_hat - y))
 
     def __str__(self) -> str:
         return "Mean Squared Error"

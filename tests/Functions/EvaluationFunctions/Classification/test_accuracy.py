@@ -56,21 +56,21 @@ def test_accuracy(classification_type, y, y_hat, expected):
     )
 
 
-def test_accuracy_fited_binary():
+def test_accuracy_fitted_binary():
     accuracy_binary = Accuracy("binary")
     y = np.array([0, 1, 1, 0])
     y_hat = np.array([0, 1, 0, 1])
     assert accuracy_binary(y=y, y_hat=y_hat) == pytest.approx(0.5, 0.01)
 
 
-def test_accuracy_fited_multiclass():
+def test_accuracy_fitted_multiclass():
     accuracy_multiclass = Accuracy("multiclass")
     y = np.array([0, 1, 0, 2])
     y_hat = np.array([0, 1, 1, 2])
     assert accuracy_multiclass(y=y, y_hat=y_hat) == pytest.approx(0.75, 0.01)
 
 
-def test_accuracy_fited_multilabel():
+def test_accuracy_fitted_multilabel():
     accuracy_multilabel = Accuracy("multilabel")
     y = np.array([[0, 1], [1, 1], [1, 0]])
     y_hat = np.array([[0, 1], [1, 0], [1, 0]])

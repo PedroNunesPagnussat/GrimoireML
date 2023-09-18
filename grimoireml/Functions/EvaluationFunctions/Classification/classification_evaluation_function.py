@@ -17,7 +17,7 @@ class ClassificationEvaluationFunction(Function, ABC):
         self._threshold = threshold
 
     @abstractmethod
-    def __call__(self, y: float, y_hat: float) -> float:
+    def __call__(self, y: np.ndarray, y_hat: np.ndarray) -> float:
         """This method is what calculates the evaluation of a point"""
         pass
 

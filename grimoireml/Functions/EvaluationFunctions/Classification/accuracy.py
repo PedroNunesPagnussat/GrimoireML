@@ -8,7 +8,7 @@ class Accuracy(ClassificationEvaluationFunction):
     def __init__(self, classification_type: str, threshold: float = 0.5) -> None:
         super().__init__(classification_type, threshold)
 
-    def __call__(self, y: float, y_hat: float, adjust_y: bool = False) -> float:
+    def __call__(self, y: np.ndarray, y_hat: np.ndarray, adjust_y: bool = False) -> float:
         """This method is what calculates the evaluation of a point"""
 
         if adjust_y:
