@@ -45,10 +45,9 @@ def test_dense_backward_pass():
     propagate_error = layer._backward(accumulated_error)
     expected_propagate_error = np.array([[-0.01588914, 0.0022702, -0.0045404]])
 
-
     assert np.allclose(propagate_error, expected_propagate_error, atol=1e-5)
     assert np.allclose(
-        layer._weight_gradient,
+        layer.weights_gradient,
         np.array([[-0.01288914], [0.0022702], [-0.0045404]]),
         atol=0.016,
     )

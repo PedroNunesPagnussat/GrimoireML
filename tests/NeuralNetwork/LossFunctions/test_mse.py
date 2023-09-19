@@ -52,16 +52,17 @@ def test_mse_loss(x, y, expected):
             np.array([[3, 2, 1], [7, 8, 9]]),
             np.array([[-4, 0, 4], [-6, -6, -6]]),
         ),
-        # (
-        #         np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
-        #         np.array([[3, 2, 1], [7, 8, 9], [7, 8, 9]]),
-        #         3.888666,
-        # ),
+        (
+            np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]]),
+            np.array([[3, 2, 1], [7, 8, 9], [7, 8, 9]]),
+            np.array([[-4, 0, 4], [-6, -6, -6], [0, 0, 0]]),
+        ),
     ],
 )
 def test_mse_loss_derivative(x, y, expected):
     loss = MSELoss()
     from icecream import ic
+
     ic(x, y, expected)
     ic(loss.derivative(x, y))
     assert loss.derivative(x, y) == pytest.approx(expected, 0.01)

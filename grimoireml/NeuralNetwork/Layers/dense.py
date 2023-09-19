@@ -1,5 +1,3 @@
-
-
 import numpy as np
 from grimoireml.NeuralNetwork.Layers.layer import Layer
 
@@ -32,15 +30,15 @@ class Dense(Layer):
             self.weights = None
             self.bias = None
 
-        self._bias_gradient = None
-        self._weight_gradient = None
+        self.bias_gradient = None
+        self.weights_gradient = None
         self._input_data = None
 
     def __call__(self, input_layer: Layer) -> Layer:
         """This is the representation of the call method"""
         self.input_shape = input_layer.output_shape
         self.weights = np.random.randn(input_layer.output_shape, self.output_shape)
-        self.bias = np.zeros((1, self.output_shape))
+        self.bias = np.zeros((1, self.output_shape), dtype=np.float64)
         return self
 
     def _forward(self, input_data: np.ndarray) -> np.ndarray:
@@ -51,8 +49,8 @@ class Dense(Layer):
     def _backward(self, accumulated_error: np.ndarray) -> np.ndarray:
         """This is the representation of the backward pass"""
         propagate_error = np.dot(accumulated_error, self.weights.T)
-        self._weight_gradient = np.dot(self._input_data.T, accumulated_error)
-        self._bias_gradient = accumulated_error
+        self.weights_gradient = np.dot(self._input_data.T, accumulated_error)
+        self.bias_gradient = accumulated_error
         return propagate_error
 
     def predict(self, input_data: np.ndarray) -> np.ndarray:

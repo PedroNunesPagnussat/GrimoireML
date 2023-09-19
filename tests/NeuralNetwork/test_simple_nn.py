@@ -2,8 +2,8 @@ import pytest
 import numpy as np
 from grimoireml.NeuralNetwork.LossFunctions import MSELoss
 from grimoireml.NeuralNetwork.Layers import Dense, Sigmoid
-np.random.seed(42)
 
+np.random.seed(42)
 
 
 def test_simple_nn():
@@ -31,13 +31,14 @@ def test_simple_nn():
     final_output = layer4._forward(out3)
     assert np.allclose(final_output, [[0.605]], atol=1e-3)
 
-    # I half the value to match professor Lucas Half MSE Loss Example This can be changed once HalfMSELoss is implemented
+    # I half the value to match professor Lucas Half MSE Loss Example
+    # This can be changed once HalfMSELoss is implemented
     loss_value = loss(y, final_output) / 2
 
     assert np.allclose(loss_value, 0.00446782, atol=1e-3)
 
     # Start Backpropagation
-    
+
     error = loss.derivative(final_output, y) / 2
     assert np.allclose(error, [[-0.095]], atol=1e-3)
 
@@ -47,12 +48,15 @@ def test_simple_nn():
     assert np.allclose(outB3, [[-0.01580641, 0.00225806, -0.00451612]], atol=1e-3)
     outB2 = layer2._backward(outB3)
     assert np.allclose(outB2, [[-0.0039013, 0.0005558, -0.0011202]], atol=1e-3)
-    outB1 = layer1._backward(outB2)
+    _ = layer1._backward(outB2)
 
-    # Compare weigth gradients
-    l1_w_gradient = layer1._weight_gradient
-    assert np.allclose(l1_w_gradient, [[-0.00195, 0.00027, -0.00027], [-0.00039, 0.00005, -0.00011]], atol=1e-3)
+    # Compare weight gradients
+    l1_w_gradient = layer1.weights_gradient
+    assert np.allclose(
+        l1_w_gradient,
+        [[-0.00195, 0.00027, -0.00027], [-0.00039, 0.00005, -0.00011]],
+        atol=1e-3,
+    )
 
-    l3_w_gradient = layer3._weight_gradient
+    l3_w_gradient = layer3.weights_gradient
     assert np.allclose(l3_w_gradient, [[-0.01287], [-0.012985], [-0.010051]], atol=1e-3)
-

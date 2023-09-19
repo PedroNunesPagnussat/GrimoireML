@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 from grimoireml.NeuralNetwork.Layers import Dense, Sigmoid
+
 np.random.seed(42)
 
 
@@ -11,15 +12,14 @@ def test_sigmoid_initialization():
     assert test_layer.output_shape == 5
 
 
-
 def test_sigmoid_forward_pass():
     layer = Dense(output_shape=3, input_shape=(2,))
     layer.weights = np.array([[0.5, 0.6, -0.4], [0.2, -0.1, -0.3]])
     layer.bias = np.array([[0, 0, 0]])
     layer2 = Sigmoid()(layer)
-    
+
     input_data = np.array([0.5, 0.1])
-    
+
     out1 = layer._forward(input_data)
     output = layer2._forward(out1)
 
@@ -40,10 +40,7 @@ def test_sigmoid_backward_pass():
     layer2._forward(input_data)
 
     error = layer2._backward(error)
-    assert np.allclose(
-        error, -0.022702, atol=1e-5
-    )
+    assert np.allclose(error, -0.022702, atol=1e-5)
     error = layer._backward(error)
     temp = np.multiply(error, [[0.245499, 0.244816, 0.246722]])
-    print(temp)
     assert np.allclose(temp, [[-0.0039013, 0.0005558, -0.0011202]], atol=1e-3)
