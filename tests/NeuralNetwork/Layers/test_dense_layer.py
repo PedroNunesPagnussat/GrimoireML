@@ -25,7 +25,7 @@ def test_dense_initialization_no_input_shape():
     assert x.bias.shape == (1, 10)
 
 
-def test_forward_pass():
+def test_dense_forward_pass():
     layer = Dense(output_shape=3, input_shape=(2,))
     layer.weights = np.array([[0.5, 0.6, -0.4], [0.2, -0.1, -0.3]])
     layer.bias = np.array([[0, 0, 0]])
@@ -37,7 +37,7 @@ def test_forward_pass():
     assert np.allclose(output, expected_output, atol=1e-5)
 
 
-def test_backward_pass():
+def test_dense_backward_pass():
     layer = Dense(output_shape=1, input_shape=(3,))
     layer.weights = np.array([[0.7], [-0.1], [0.2]])
     layer._input_data = np.array([[0.567, 0.572, 0.443]])
@@ -45,9 +45,7 @@ def test_backward_pass():
     propagate_error = layer._backward(accumulated_error)
     expected_propagate_error = np.array([[-0.01588914, 0.0022702, -0.0045404]])
 
-    from icecream import ic
 
-    ic(layer._weight_gradient)
     assert np.allclose(propagate_error, expected_propagate_error, atol=1e-5)
     assert np.allclose(
         layer._weight_gradient,

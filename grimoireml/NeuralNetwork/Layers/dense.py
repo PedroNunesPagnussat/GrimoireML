@@ -1,3 +1,5 @@
+
+
 import numpy as np
 from grimoireml.NeuralNetwork.Layers.layer import Layer
 
@@ -39,7 +41,6 @@ class Dense(Layer):
         self.input_shape = input_layer.output_shape
         self.weights = np.random.randn(input_layer.output_shape, self.output_shape)
         self.bias = np.zeros((1, self.output_shape))
-
         return self
 
     def _forward(self, input_data: np.ndarray) -> np.ndarray:
@@ -56,7 +57,7 @@ class Dense(Layer):
 
     def predict(self, input_data: np.ndarray) -> np.ndarray:
         """This is the representation of the predict method"""
-        self._forward(self._input_data)
+        self._forward(input_data)
 
     def __str__(self) -> str:
         return (
