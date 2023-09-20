@@ -12,7 +12,7 @@ class ReLU(Activation):
             return np.maximum(0, x)
 
         def relu_derivative(x):
-            np.where(x > 0, 1, 0)
+            return np.where(x > 0, 1, 0)
 
         super().__init__(relu, relu_derivative)
 

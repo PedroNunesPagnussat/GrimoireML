@@ -6,13 +6,26 @@ from grimoireml.NeuralNetwork.Models.ModelUtils.history import History
 import numpy as np
 from timeit import default_timer as timer
 
+from icecream import ic
 
 class Sequential:
-    def __init__(self):
+    def __init__(self, layers: list = None):
         self.loss = None
         self.optimizer = None
-        self.layers = []
         self.history = None
+        self.layers = []
+
+        if layers is not None:
+            self.initialize_layers(layers)
+
+
+    def initialize_layers(self, layers: list) -> list:
+        input_layer = layers[0]
+        for layer in layers[1:]:
+            input_layer = layer(input_layer)
+
+        self.layers = layers
+
 
     def add(self, layer: Layer):
         self.layers.append(layer)
@@ -33,6 +46,7 @@ class Sequential:
             validation_data: tuple = None,
             verbose: bool = True,
     ):
+
 
         n_batches = len(X) // batch_size
         self.history = History(metrics)
