@@ -8,6 +8,7 @@ from timeit import default_timer as timer
 
 from icecream import ic
 
+
 class Sequential:
     def __init__(self, layers: list = None):
         self.loss = None
@@ -18,14 +19,12 @@ class Sequential:
         if layers is not None:
             self.initialize_layers(layers)
 
-
     def initialize_layers(self, layers: list) -> list:
         input_layer = layers[0]
         for layer in layers[1:]:
             input_layer = layer(input_layer)
 
         self.layers = layers
-
 
     def add(self, layer: Layer):
         self.layers.append(layer)
@@ -37,16 +36,15 @@ class Sequential:
         self.layers = np.array(self.layers)
 
     def fit(
-            self,
-            X: np.ndarray,
-            y: np.ndarray,
-            epochs: int,
-            batch_size: int,
-            metrics: list = None,
-            validation_data: tuple = None,
-            verbose: bool = True,
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        epochs: int,
+        batch_size: int,
+        metrics: list = None,
+        validation_data: tuple = None,
+        verbose: bool = True,
     ):
-
 
         n_batches = len(X) // batch_size
         self.history = History(metrics)
@@ -57,8 +55,8 @@ class Sequential:
             epoch_metrics = {str(metric): 0 for metric in metrics}
 
             for batch in range(0, n_batches, batch_size):
-                batch_X = X[batch: batch + batch_size]
-                batch_y = y[batch: batch + batch_size]
+                batch_X = X[batch : batch + batch_size]
+                batch_y = y[batch : batch + batch_size]
 
                 batch_loss, batch_metrics = self.train_on_batch(batch_X, batch_y)
                 epoch_loss += batch_loss

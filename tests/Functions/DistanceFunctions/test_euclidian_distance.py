@@ -112,4 +112,3 @@ def test_euclidean_distance_matrix(x, y, expected):
     assert np.all(
         euclidean_distance.distance_matrix(x, y) == pytest.approx(expected, 0.01)
     )
-

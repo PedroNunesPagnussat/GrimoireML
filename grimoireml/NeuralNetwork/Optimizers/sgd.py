@@ -13,5 +13,3 @@ class SGD(Optimizer):
 
     def __str__(self):
         return f"SGD(learning_rate={self.learning_rate})"
-
-

@@ -2,8 +2,8 @@ from grimoireml.NeuralNetwork.Initializers.initializer import Initializer
 import numpy as np
 
 
-class ConstantBias(Initializer):    
-    def __init__(self, constant: float):
+class ConstantBias(Initializer):
+    def __init__(self, constant: float = 0.001):
         self.constant = constant
 
     def __call__(self, output_shape: int) -> np.ndarray:

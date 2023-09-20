@@ -7,7 +7,5 @@ class Initializer(ABC):
         pass
 
     @abstractmethod
-    def __call__(self):
+    def __call__(self, *args, **kwargs) -> np.ndarray:
         pass
-
-    

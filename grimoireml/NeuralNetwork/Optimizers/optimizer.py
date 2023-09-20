@@ -8,18 +8,16 @@ class Optimizer(ABC):
         self.learning_rate = learning_rate
 
     def update_params(self, layers: np.array) -> None:
-        """ This updates all the layers in the model. """
+        """This updates all the layers in the model."""
         for layer in layers:
             if layer.trainable:
                 self.update_layer(layer)
 
     @abstractmethod
     def update_layer(self, layer: Layer) -> None:
-        """ This updates the layer. """
+        """This updates the layer."""
         pass
 
     @abstractmethod
     def __str__(self):
         pass
-
-

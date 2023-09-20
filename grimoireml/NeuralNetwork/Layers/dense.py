@@ -1,7 +1,9 @@
 import numpy as np
 from grimoireml.NeuralNetwork.Layers.layer import Layer
 from grimoireml.NeuralNetwork.Initializers.initializer import Initializer
-from grimoireml.NeuralNetwork.Initializers.WeightInitializers.he_uniform import HeUniformWeight
+from grimoireml.NeuralNetwork.Initializers.WeightInitializers.xavier_uniform import (
+    XavierUniformWeight,
+)
 from grimoireml.NeuralNetwork.Initializers.BiasInitializers import ZerosBias
 
 
@@ -18,9 +20,13 @@ class Dense(Layer):
         """This is the constructor for the Dense class"""
 
         if weight_initializer is None:
-            self.weight_initializer = HeUniformWeight()
+            self.weight_initializer = XavierUniformWeight()
+        else:
+            self.weight_initializer = weight_initializer
         if bias_initializer is None:
             self.bias_initializer = ZerosBias()
+        else:
+            self.bias_initializer = bias_initializer
 
         super().__init__(output_shape)
 
@@ -41,7 +47,9 @@ class Dense(Layer):
     def __call__(self, input_layer: Layer) -> Layer:
         """This is the representation of the call method"""
         self.input_shape = input_layer.output_shape
-        self.weights = self.weight_initializer(input_layer.output_shape, self.output_shape)
+        self.weights = self.weight_initializer(
+            input_layer.output_shape, self.output_shape
+        )
         self.bias = self.bias_initializer(self.output_shape)
         return self
 

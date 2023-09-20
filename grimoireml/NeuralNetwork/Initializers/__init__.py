@@ -4,6 +4,7 @@ from grimoireml.NeuralNetwork.Initializers.BiasInitializers import (
     NormalBias,
     UniformBias,
     ConstantBias,
+    RandomBias,
 )
 
 from grimoireml.NeuralNetwork.Initializers.WeightInitializers import (
@@ -14,4 +15,5 @@ from grimoireml.NeuralNetwork.Initializers.WeightInitializers import (
     ZerosWeight,
     NormalWeight,
     UniformWeight,
+    RandomWeight,
 )

@@ -7,6 +7,7 @@ from grimoireml.NeuralNetwork.Optimizers import SGD
 
 np.random.seed(42)
 
+
 def test_simple_nn():
     X = np.array([[0.5, 0.1]])
     y = np.array([[0.7]])
@@ -27,5 +28,9 @@ def test_simple_nn():
 
     layers = model.layers
 
-    assert np.allclose(layers[0].weights, [[0.50019, 0.59997, -0.39994], [0.20004, -0.10001, -0.29998]], atol=1e-3)
+    assert np.allclose(
+        layers[0].weights,
+        [[0.50019, 0.59997, -0.39994], [0.20004, -0.10001, -0.29998]],
+        atol=1e-3,
+    )
     assert np.allclose(layers[2].weights, [[0.70129], [-0.09870], [0.20100]], atol=1e-2)
