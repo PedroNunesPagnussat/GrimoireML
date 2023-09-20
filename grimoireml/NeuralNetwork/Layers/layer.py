@@ -16,12 +16,12 @@ class Layer(ABC):
         pass
 
     @abstractmethod
-    def _forward(self, input_data: np.ndarray) -> np.ndarray:
+    def forward(self, input_data: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
         pass
 
     @abstractmethod
-    def _backward(self, output_data: np.ndarray) -> np.ndarray:
+    def backward(self, output_data: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
         pass
 

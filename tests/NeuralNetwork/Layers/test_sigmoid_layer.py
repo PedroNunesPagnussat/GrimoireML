@@ -20,8 +20,8 @@ def test_sigmoid_forward_pass():
 
     input_data = np.array([0.5, 0.1])
 
-    out1 = layer._forward(input_data)
-    output = layer2._forward(out1)
+    out1 = layer.forward(input_data)
+    output = layer2.forward(out1)
 
     expected_output = np.array([0.56711, 0.57199, 0.44276])
 
@@ -36,11 +36,11 @@ def test_sigmoid_backward_pass():
     layer.weights = np.array([[0.7], [-0.1], [0.2]])
 
     input_data = np.array([[0.56711, 0.57199, 0.44276]])
-    input_data = layer._forward(input_data)
-    layer2._forward(input_data)
+    input_data = layer.forward(input_data)
+    layer2.forward(input_data)
 
-    error = layer2._backward(error)
+    error = layer2.backward(error)
     assert np.allclose(error, -0.022702, atol=1e-5)
-    error = layer._backward(error)
+    error = layer.backward(error)
     temp = np.multiply(error, [[0.245499, 0.244816, 0.246722]])
     assert np.allclose(temp, [[-0.0039013, 0.0005558, -0.0011202]], atol=1e-3)

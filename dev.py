@@ -40,7 +40,7 @@ model = Sequential(
         Sigmoid(),
     ]
 )
-print(model)
+print(model) # noqa T201
 model.build(MSELoss(), Adam(learning_rate=0.01))
 model.fit(
     X, y, epochs=150, batch_size=1, metrics=[], validation_data=None, verbose=True

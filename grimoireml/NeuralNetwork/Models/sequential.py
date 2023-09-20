@@ -66,7 +66,7 @@ class Sequential:
                 # Print Progress
 
             epoch_end_time = timer()
-            epoch_time = epoch_end_time - epoch_start_time
+            epoch_time = epoch_end_time - epoch_start_time  # noqa: F841
             # epoch time  # noqa: T201
             # self.history.history["loss"].append(epoch_loss)
             # for metric in metrics:
@@ -88,12 +88,12 @@ class Sequential:
 
     def forward_pass(self, X: np.ndarray):
         for layer in self.layers:
-            X = layer._forward(X)
+            X = layer.forward(X)
         return X
 
     def backward_pass(self, X: np.ndarray):
         for layer in reversed(self.layers):
-            X = layer._backward(X)
+            X = layer.backward(X)
 
     def update_weights(self):
         for layer in self.layers:
@@ -103,9 +103,6 @@ class Sequential:
         pass
 
     def evaluate_on_training(self):
-        pass
-
-    def save_model(self):
         pass
 
     def __str__(self) -> str:

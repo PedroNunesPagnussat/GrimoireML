@@ -17,12 +17,12 @@ class Activation(Layer):
         self.output_shape = input_layer.output_shape
         return self
 
-    def _forward(self, input_data: np.ndarray) -> np.ndarray:
+    def forward(self, input_data: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
         self._input_data = input_data
         return self._activation(input_data)
 
-    def _backward(self, accumulated_error: np.ndarray) -> np.ndarray:
+    def backward(self, accumulated_error: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
         return np.multiply(accumulated_error, self._derivative(self._input_data))
 

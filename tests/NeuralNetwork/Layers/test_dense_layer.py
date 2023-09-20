@@ -31,7 +31,7 @@ def test_dense_forward_pass():
     layer.bias = np.array([[0, 0, 0]])
     input_data = np.array([0.5, 0.1])
 
-    output = layer._forward(input_data)
+    output = layer.forward(input_data)
     expected_output = np.array([0.27, 0.29, -0.23])
 
     assert np.allclose(output, expected_output, atol=1e-5)
@@ -42,7 +42,7 @@ def test_dense_backward_pass():
     layer.weights = np.array([[0.7], [-0.1], [0.2]])
     layer._input_data = np.array([[0.567, 0.572, 0.443]])
     accumulated_error = np.array([[-0.022702]])
-    propagate_error = layer._backward(accumulated_error)
+    propagate_error = layer.backward(accumulated_error)
     expected_propagate_error = np.array([[-0.01588914, 0.0022702, -0.0045404]])
 
     assert np.allclose(propagate_error, expected_propagate_error, atol=1e-5)

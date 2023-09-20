@@ -53,12 +53,12 @@ class Dense(Layer):
         self.bias = self.bias_initializer(self.output_shape)
         return self
 
-    def _forward(self, input_data: np.ndarray) -> np.ndarray:
+    def forward(self, input_data: np.ndarray) -> np.ndarray:
         """This is the representation of the forward pass"""
         self._input_data = input_data
         return np.dot(input_data, self.weights) + self.bias
 
-    def _backward(self, accumulated_error: np.ndarray) -> np.ndarray:
+    def backward(self, accumulated_error: np.ndarray) -> np.ndarray:
         """This is the representation of the backward pass"""
         propagate_error = np.dot(accumulated_error, self.weights.T)
         self.weights_gradient = np.dot(self._input_data.T, accumulated_error)
