@@ -1,5 +1,8 @@
 import numpy as np
 from grimoireml.NeuralNetwork.Layers.layer import Layer
+from grimoireml.NeuralNetwork.Initializers.initializer import Initializer
+from grimoireml.NeuralNetwork.Initializers.WeightInitializers.he_uniform import HeUniformWeight
+from grimoireml.NeuralNetwork.Initializers.BiasInitializers import ZerosBias
 
 
 class Dense(Layer):
@@ -9,22 +12,22 @@ class Dense(Layer):
         self,
         output_shape: int,
         input_shape: tuple = None,
-        weight_initializer: callable = None,
-        bias_initializer: callable = None,
+        weight_initializer: Initializer = None,
+        bias_initializer: Initializer = None,
     ):
         """This is the constructor for the Dense class"""
 
         if weight_initializer is None:
-            weight_initializer = np.random.randn
+            self.weight_initializer = HeUniformWeight()
         if bias_initializer is None:
-            bias_initializer = np.zeros
+            self.bias_initializer = ZerosBias()
 
         super().__init__(output_shape)
 
         if input_shape is not None:
             self.input_shape = input_shape[0]
-            self.weights = weight_initializer(input_shape[0], output_shape)
-            self.bias = bias_initializer((1, output_shape))
+            self.weights = self.weight_initializer(input_shape[0], output_shape)
+            self.bias = self.bias_initializer(output_shape)
 
         else:
             self.weights = None
@@ -33,12 +36,13 @@ class Dense(Layer):
         self.bias_gradient = None
         self.weights_gradient = None
         self._input_data = None
+        self.trainable = True
 
     def __call__(self, input_layer: Layer) -> Layer:
         """This is the representation of the call method"""
         self.input_shape = input_layer.output_shape
-        self.weights = np.random.randn(input_layer.output_shape, self.output_shape)
-        self.bias = np.zeros((1, self.output_shape), dtype=np.float64)
+        self.weights = self.weight_initializer(input_layer.output_shape, self.output_shape)
+        self.bias = self.bias_initializer(self.output_shape)
         return self
 
     def _forward(self, input_data: np.ndarray) -> np.ndarray:
@@ -50,7 +54,7 @@ class Dense(Layer):
         """This is the representation of the backward pass"""
         propagate_error = np.dot(accumulated_error, self.weights.T)
         self.weights_gradient = np.dot(self._input_data.T, accumulated_error)
-        self.bias_gradient = accumulated_error
+        self.bias_gradient = np.sum(accumulated_error)
         return propagate_error
 
     def predict(self, input_data: np.ndarray) -> np.ndarray:

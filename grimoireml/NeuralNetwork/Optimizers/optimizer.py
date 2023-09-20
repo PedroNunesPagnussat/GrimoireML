@@ -10,7 +10,8 @@ class Optimizer(ABC):
     def update_params(self, layers: np.array) -> None:
         """ This updates all the layers in the model. """
         for layer in layers:
-            self.update_layer(layer)
+            if layer.trainable:
+                self.update_layer(layer)
 
     @abstractmethod
     def update_layer(self, layer: Layer) -> None:

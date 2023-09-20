@@ -98,7 +98,6 @@ class DBSCAN:
             if len(neighbor_neighbors) >= self._min_points:
                 points_to_check.update(neighbor_neighbors)
 
-    @property
     def __str__(self) -> str:
         """This method is called when the function is printed."""
         return (

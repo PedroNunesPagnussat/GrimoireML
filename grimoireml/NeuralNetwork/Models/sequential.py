@@ -2,7 +2,7 @@ from grimoireml.NeuralNetwork.LossFunctions.loss_function import LossFunction
 from grimoireml.Functions.function import Function
 from grimoireml.NeuralNetwork.Optimizers.optimizer import Optimizer
 from grimoireml.NeuralNetwork.Layers.layer import Layer
-from grimoireml.NeuralNetwork.Models.history import History
+from grimoireml.NeuralNetwork.Models.ModelUtils.history import History
 import numpy as np
 from timeit import default_timer as timer
 
@@ -55,7 +55,7 @@ class Sequential:
 
             epoch_end_time = timer()
             epoch_time = epoch_end_time - epoch_start_time
-            print(epoch_time)  # noqa: T201
+            # epoch time  # noqa: T201
             # self.history.history["loss"].append(epoch_loss)
             # for metric in metrics:
             #     self.history.history[str(metric)].append(epoch_metrics[str(metric)])
@@ -97,7 +97,7 @@ class Sequential:
         pass
 
     def __str__(self) -> str:
-        s = f"Sequential Model with: Layers: {len(self.layers)} + \n"
+        s = f"Sequential Model with: Layers: {len(self.layers)} \n"
         s += "Optimizer: " + str(self.optimizer) + "\n"
         for layer in self.layers:
             s += str(layer) + "\n"

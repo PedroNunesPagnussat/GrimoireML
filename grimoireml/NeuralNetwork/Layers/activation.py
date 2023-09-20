@@ -9,6 +9,7 @@ class Activation(Layer):
         """This is the constructor for the Activation class"""
         self._activation = activation
         self._derivative = derivative
+        self.trainable = False
 
     def __call__(self, input_layer: Layer) -> Layer:
         """This method will be called when the object is called"""
