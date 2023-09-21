@@ -7,8 +7,9 @@ class Activation(Layer):
 
     def __init__(self, activation, derivative):
         """This is the constructor for the Activation class"""
-        self._activation = activation
-        self._derivative = derivative
+        self.input_data = None
+        self.activation = activation
+        self.derivative = derivative
         self.trainable = False
 
     def __call__(self, input_layer: Layer) -> Layer:
@@ -19,16 +20,16 @@ class Activation(Layer):
 
     def forward(self, input_data: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
-        self._input_data = input_data
-        return self._activation(input_data)
+        self.input_data = input_data
+        return self.activation(input_data)
 
     def backward(self, accumulated_error: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
-        return np.multiply(accumulated_error, self._derivative(self._input_data))
+        return np.multiply(accumulated_error, self.derivative(self.input_data))
 
     def predict(self, input_data: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
-        return self._activation(input_data)
+        return self.activation(input_data)
 
     def __str__(self):
         pass
