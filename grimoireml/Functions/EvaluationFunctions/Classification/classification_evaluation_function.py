@@ -29,7 +29,6 @@ class ClassificationEvaluationFunction(Function, ABC):
     def _get_prediction(self, y_pred: np.ndarray) -> np.ndarray:
         """This method get the predicted values from the probability vector
         based on the type of classification"""
-
         if self.prediction_type == 1:
             return np.argmax(y_pred, axis=1)
 

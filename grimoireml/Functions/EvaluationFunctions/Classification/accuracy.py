@@ -12,7 +12,6 @@ class Accuracy(ClassificationEvaluationFunction):
         self, y: np.ndarray, y_hat: np.ndarray, adjust_y: bool = False
     ) -> float:
         """This method is what calculates the evaluation of a point"""
-
         if adjust_y:
             y = super()._get_prediction(y)
 

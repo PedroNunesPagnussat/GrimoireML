@@ -2,5 +2,13 @@
 
 
 from grimoireml.NeuralNetwork.LossFunctions.mse import (
-    MeanSquaredError as MSELoss,
+    MSE as MSELoss,
+)
+
+from grimoireml.NeuralNetwork.LossFunctions.bce import (
+    BCE as BCELoss,
+)
+
+from grimoireml.NeuralNetwork.LossFunctions.cce import (
+    CCE as CCELoss,
 )
