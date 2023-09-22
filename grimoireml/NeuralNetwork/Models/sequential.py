@@ -69,10 +69,11 @@ class Sequential:
                     epoch_metrics[str(metric)] += batch_metrics[str(metric)]
 
             epoch_time = timer() - epoch_start_time
-            self.history.history["loss"].append(epoch_loss / len(X))
+            epoch_loss /= len(X)
+            self.history.history["loss"].append(epoch_loss)
 
-            # for metric in metrics:
-            #     self.history.history[str(metric)].append(epoch_metrics[str(metric)])
+            for metric in metrics:
+                self.history.history[str(metric)].append(epoch_metrics[str(metric)])
 
             if verbose:
                 self.log_progress(epoch, epoch_loss, epoch_metrics, epoch_time)
@@ -84,7 +85,7 @@ class Sequential:
         self.optimizer.update_params(self.layers)
 
         loss = self.loss(y_hat, y)
-        metrics = {str(metric): metric(y_hat, y) for metric in self.history.metrics_list}
+        metrics = {str(metric): metric(y_hat, y, adjust_y = True) for metric in self.history.metrics_list}
         return loss, metrics
 
     def predict(self, X: np.ndarray):

@@ -6,11 +6,11 @@ class History:
         self.metrics_list = metrics
         self.history = {"loss": []}
         for metric in self.metrics_list:
-            self.history[metric] = []
+            self.history[str(metric)] = []
 
         if validation_data is not None:
             self.history["val_loss"] = []
             for metric in self.metrics_list:
-                self.history["val_" + metric] = []
+                self.history["val_" + str(metric)] = []
 
     

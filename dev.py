@@ -29,7 +29,8 @@ model = Sequential([
     Sigmoid()
 ])
 model.build(MSELoss(), Adam(learning_rate=0.01))
-model.fit(X, y, epochs=2, batch_size=1, metrics=[Accuracy(classification_type="binary")], validation_data=None, verbose=True)
+#Accuracy(classification_type="binary")
+model.fit(X, y, epochs=2, batch_size=16, metrics=[], validation_data=None, verbose=True)
 exit()
 
 model = Sequential()
