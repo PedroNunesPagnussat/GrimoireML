@@ -49,9 +49,12 @@ class Sequential:
 
 
         n_batches = len(X) // batch_size
-        self.history = History(metrics)
+        for metric in metrics:
+            metric.ajust_y = True
+        self.history = History(metrics, validation_data)
 
-        for _ in range(epochs):
+
+        for epoch in range(epochs):
             epoch_start_time = timer()
             epoch_loss = 0
             epoch_metrics = {str(metric): 0 for metric in metrics}
@@ -65,14 +68,15 @@ class Sequential:
                 for metric in metrics:
                     epoch_metrics[str(metric)] += batch_metrics[str(metric)]
 
-                # Print Progress
+            epoch_time = timer() - epoch_start_time
+            self.history.history["loss"].append(epoch_loss / len(X))
 
-            epoch_end_time = timer()
-            epoch_time = epoch_end_time - epoch_start_time
-            # epoch time  # noqa: T201
-            # self.history.history["loss"].append(epoch_loss)
             # for metric in metrics:
             #     self.history.history[str(metric)].append(epoch_metrics[str(metric)])
+
+            if verbose:
+                self.log_progress(epoch, epoch_loss, epoch_metrics, epoch_time)
+            
 
     def train_on_batch(self, X: np.ndarray, y: np.ndarray):
         y_hat = self.forward_pass(X)
@@ -80,8 +84,8 @@ class Sequential:
         self.optimizer.update_params(self.layers)
 
         loss = self.loss(y_hat, y)
-        print(y_hat, loss / 2)  # noqa: T201
-        return loss, {}
+        metrics = {str(metric): metric(y_hat, y) for metric in self.history.metrics_list}
+        return loss, metrics
 
     def predict(self, X: np.ndarray):
         for layer in self.layers:
@@ -107,8 +111,13 @@ class Sequential:
     def evaluate_on_training(self):
         pass
 
-    def save_model(self):
-        pass
+
+    def log_progress(self, epoch_num, epoch_loss, epoch_metrics, epoch_time):
+        print("Epoch: ", epoch_num + 1)
+        print(f"Epoch Loss: {epoch_loss:.6f}")
+        for metric in epoch_metrics:
+            print(f"Epoch {metric}: {epoch_metrics[metric]:.6f}")
+        print(f"Epoch Time: {epoch_time:.6f}")
 
     def __str__(self) -> str:
         s = f"Sequential Model with: Layers: {len(self.layers)} \n"

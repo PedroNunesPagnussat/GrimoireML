@@ -9,22 +9,28 @@ import numpy as np
 from icecream import ic
 from grimoireml.NeuralNetwork.Models import Sequential
 from grimoireml.NeuralNetwork.Initializers.BiasInitializers import ZerosBias
+from dev_data_fetch import fetch_data
+
+X, y = fetch_data("breast_cancer")
+# standart scaler
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+X = scaler.fit_transform(X)
 
 
-X = np.array([[0.5, 0.1]])
-y = np.array([[0.7]])
+input_shape = X.shape[1]
+
+
 
 model = Sequential([
-    Dense(3, input_shape=(2,)),
+    Dense(3, input_shape=(input_shape,)),
     ReLU(),
     Dense(1),
     Sigmoid()
 ])
-print(model)
 model.build(MSELoss(), Adam(learning_rate=0.01))
-model.fit(X, y, epochs=150, batch_size=1, metrics=[], validation_data=None, verbose=True)
-
-
+model.fit(X, y, epochs=2, batch_size=1, metrics=[Accuracy(classification_type="binary")], validation_data=None, verbose=True)
+exit()
 
 model = Sequential()
 
