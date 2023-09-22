@@ -41,7 +41,7 @@ class Dense(Layer):
 
         self.bias_gradient = None
         self.weights_gradient = None
-        self._input_data = None
+        self.input_data = None
         self.trainable = True
 
     def __call__(self, input_layer: Layer) -> Layer:
@@ -55,13 +55,13 @@ class Dense(Layer):
 
     def forward(self, input_data: np.ndarray) -> np.ndarray:
         """This is the representation of the forward pass"""
-        self._input_data = input_data
+        self.input_data = input_data
         return np.dot(input_data, self.weights) + self.bias
 
     def backward(self, accumulated_error: np.ndarray) -> np.ndarray:
         """This is the representation of the backward pass"""
         propagate_error = np.dot(accumulated_error, self.weights.T)
-        self.weights_gradient = np.dot(self._input_data.T, accumulated_error)
+        self.weights_gradient = np.dot(self.input_data.T, accumulated_error)
         self.bias_gradient = np.sum(accumulated_error)
         return propagate_error
 

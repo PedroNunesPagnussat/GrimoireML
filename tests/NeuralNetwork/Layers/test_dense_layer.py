@@ -40,7 +40,7 @@ def test_dense_forward_pass():
 def test_dense_backward_pass():
     layer = Dense(output_shape=1, input_shape=(3,))
     layer.weights = np.array([[0.7], [-0.1], [0.2]])
-    layer._input_data = np.array([[0.567, 0.572, 0.443]])
+    layer.input_data = np.array([[0.567, 0.572, 0.443]])
     accumulated_error = np.array([[-0.022702]])
     propagate_error = layer.backward(accumulated_error)
     expected_propagate_error = np.array([[-0.01588914, 0.0022702, -0.0045404]])

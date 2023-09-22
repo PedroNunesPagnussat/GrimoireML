@@ -1,12 +1,14 @@
 from grimoireml.NeuralNetwork.Layers import ReLU, Sigmoid, Dense
-from grimoireml.NeuralNetwork.LossFunctions import MSELoss
+from grimoireml.NeuralNetwork.LossFunctions import MSELoss, BCELoss
 from grimoireml.NeuralNetwork.Optimizers import SGD
 from grimoireml.NeuralNetwork.Models import Sequential
 from dev_data_fetch import fetch_data
+from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 # Fetching data
 X, y = fetch_data("breast_cancer")
+X = StandardScaler().fit_transform(X)
 
 model = Sequential(
     [
@@ -19,6 +21,6 @@ model = Sequential(
     ]
 )
 
-model.build(loss=MSELoss(), optimizer=SGD())
-
-model.fit(X, y, epochs=100, batch_size=32)
+model.build(loss=BCELoss(), optimizer=SGD())
+print("AAAAAAAAA")
+model.fit(X, y, epochs=6, batch_size=1)

@@ -7,7 +7,6 @@ class BCE(LossFunction):
 
     def __call__(self, y_hat: np.ndarray, y: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
-
         y_hat = np.clip(y_hat, 1e-15, 1 - 1e-15)
         return -np.mean(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
 

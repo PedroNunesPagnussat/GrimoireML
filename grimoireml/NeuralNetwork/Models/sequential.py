@@ -41,59 +41,48 @@ class Sequential:
         y: np.ndarray,
         epochs: int,
         batch_size: int,
-        metrics: list = None,
+        metrics: list = [],
         validation_data: tuple = None,
         verbose: bool = True,
     ):
 
         n_batches = len(X) // batch_size
-        if metrics:
-            for metric in metrics:
-                metric.adjust_y = True
-        # self.history = History(metrics, validation_data)
 
         for epoch in range(epochs):
             epoch_start_time = timer()
             epoch_loss = 0
-            epoch_metrics = {str(metric): 0 for metric in metrics}
 
             for batch in range(0, n_batches, batch_size):
-                batch_X = X[batch : batch + batch_size]
-                batch_y = y[batch : batch + batch_size]
+                batch_X = X[batch: batch + batch_size]
+                batch_y = y[batch: batch + batch_size]
 
-                batch_loss, batch_metrics = self.train_on_batch(batch_X, batch_y)
+                batch_loss, _ = self.train_on_batch(batch_X, batch_y)
                 epoch_loss += batch_loss
-                for metric in metrics:
-                    epoch_metrics[str(metric)] += batch_metrics[str(metric)]
 
             epoch_time = timer() - epoch_start_time
+
             epoch_loss /= len(X)
-            self.history.history["loss"].append(epoch_loss)
 
             epoch_end_time = timer()
             epoch_time = epoch_end_time - epoch_start_time  # noqa: F841
-            # epoch time  # noqa: T201
-            # self.history.history["loss"].append(epoch_loss)
-            # for metric in metrics:
-            #     self.history.history[str(metric)].append(epoch_metrics[str(metric)])
 
-            for metric in metrics:
-                self.history.history[str(metric)].append(epoch_metrics[str(metric)])
 
             if verbose:
-                self.log_progress(epoch, epoch_loss, epoch_metrics, epoch_time)
+                self.log_progress(epoch, epoch_loss, {}, epoch_time)
 
     def train_on_batch(self, X: np.ndarray, y: np.ndarray):
         y_hat = self.forward_pass(X)
-        self.backward_pass(self.loss.derivative(y_hat, y))
+        loss = self.loss(y_hat, y)
+
+        l = np.sum(self.loss.derivative(y_hat, y), axis=1, keepdims=True)
+        self.backward_pass(l)
         self.optimizer.update_params(self.layers)
 
-        loss = self.loss(y_hat, y)
-        metrics = {
-            str(metric): metric(y_hat, y, adjust_y=True)
-            for metric in self.history.metrics_list
-        }
-        return loss, metrics
+        # metrics = {
+        #     str(metric): metric(y_hat, y, adjust_y=True)
+        #     for metric in self.history.metrics_list
+        # }
+        return loss, {}
 
     def predict(self, X: np.ndarray):
         for layer in self.layers:
