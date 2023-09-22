@@ -47,10 +47,10 @@ class Sequential:
     ):
 
         n_batches = len(X) // batch_size
-        for metric in metrics:
-            metric.ajust_y = True
-        self.history = History(metrics, validation_data)
-
+        if metrics:
+            for metric in metrics:
+                metric.adjust_y = True
+        # self.history = History(metrics, validation_data)
 
         for epoch in range(epochs):
             epoch_start_time = timer()
@@ -70,7 +70,6 @@ class Sequential:
             epoch_loss /= len(X)
             self.history.history["loss"].append(epoch_loss)
 
-
             epoch_end_time = timer()
             epoch_time = epoch_end_time - epoch_start_time  # noqa: F841
             # epoch time  # noqa: T201
@@ -83,8 +82,6 @@ class Sequential:
 
             if verbose:
                 self.log_progress(epoch, epoch_loss, epoch_metrics, epoch_time)
-            
-
 
     def train_on_batch(self, X: np.ndarray, y: np.ndarray):
         y_hat = self.forward_pass(X)
@@ -92,7 +89,10 @@ class Sequential:
         self.optimizer.update_params(self.layers)
 
         loss = self.loss(y_hat, y)
-        metrics = {str(metric): metric(y_hat, y, adjust_y = True) for metric in self.history.metrics_list}
+        metrics = {
+            str(metric): metric(y_hat, y, adjust_y=True)
+            for metric in self.history.metrics_list
+        }
         return loss, metrics
 
     def predict(self, X: np.ndarray):

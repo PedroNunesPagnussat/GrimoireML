@@ -12,6 +12,8 @@ project_root_directory = os.path.abspath(
 sys.path.append(project_root_directory)
 
 # Test the BCE loss function
+
+
 @pytest.mark.parametrize(
     "x, y, expected",
     [
@@ -24,6 +26,7 @@ sys.path.append(project_root_directory)
 def test_bce_loss(x, y, expected):
     loss = BCELoss()
     assert loss(x, y) == pytest.approx(expected, 0.01)
+
 
 # Test the derivative of the BCE loss function
 @pytest.mark.parametrize(
@@ -38,6 +41,7 @@ def test_bce_loss(x, y, expected):
 def test_bce_loss_derivative(x, y, expected):
     loss = BCELoss()
     assert loss.derivative(x, y) == pytest.approx(expected, 0.01)
+
 
 # Test the string representation of the BCE loss function
 def test_str():

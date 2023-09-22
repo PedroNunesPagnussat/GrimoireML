@@ -8,14 +8,16 @@ import numpy as np
 # Fetching data
 X, y = fetch_data("breast_cancer")
 
-model = Sequential([
-    Dense(16, input_shape=(X.shape[1],)),
-    ReLU(),
-    Dense(8),
-    ReLU(),
-    Dense(1),
-    Sigmoid()
-])
+model = Sequential(
+    [
+        Dense(16, input_shape=(X.shape[1],)),
+        ReLU(),
+        Dense(8),
+        ReLU(),
+        Dense(1),
+        Sigmoid(),
+    ]
+)
 
 model.build(loss=MSELoss(), optimizer=SGD())
 

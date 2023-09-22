@@ -12,5 +12,3 @@ class History:
             self.history["val_loss"] = []
             for metric in self.metrics_list:
                 self.history["val_" + str(metric)] = []
-
-    
