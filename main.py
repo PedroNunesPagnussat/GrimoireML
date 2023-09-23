@@ -10,14 +10,22 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import pandas as pd
 
+#disable numpy warnings
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+
 np.random.seed(42)
 # Fetching data
-X, y = pd.read_csv("data.csv").to_numpy()[:, :-1], pd.read_csv("data.csv").to_numpy()[:, -1]
+X, y = (
+    pd.read_csv("data.csv").to_numpy()[:, :-1],
+    pd.read_csv("data.csv").to_numpy()[:, -1],
+)
 X = StandardScaler().fit_transform(X)
-# split in trainm, test and validation
-X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=0.3)
-X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.5)
+# split in train, test and validation
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
+y_train = y_train.reshape(-1, 1)
+y_test = y_test.reshape(-1, 1)
 
 model = Sequential(
     [
@@ -30,23 +38,65 @@ model = Sequential(
     ]
 )
 
-model.build(loss=BCELoss(), optimizer=Adam(learning_rate=0.001))
-model.fit(X_train, y_train, epochs=150, metrics=[Accuracy(classification_type="binary")],
-          validation_data=(X_test, y_test), verbose=1, batch_size=len(X_train))
+model.build(loss=BCELoss(), optimizer=Adam(learning_rate=0.01))
+model.fit(
+    X_train,
+    y_train,
+    epochs=150,
+    metrics=[Accuracy(classification_type="binary")],
+    validation_data=(X_test, y_test),
+    verbose=True,
+    batch_size=len(X_train),
+)
+l, m = model.evaluate(X_test, y_test)
 
-# print(model.history.history["val_loss"][-1])
-# r = model.predict(X_test)
-# r = np.where(r > 0.5, 1, 0)
-# r = r.reshape(-1)
-# print(np.sum(r == y_test) / len(y_test))
 
-#plot
-import matplotlib.pyplot as plt
-plt.plot(model.history.history["loss"])
-plt.plot(model.history.history["val_loss"])
-plt.show()
+from tensorflow.keras.models import Sequential as KerasSequential
+from tensorflow.keras.layers import Dense as KerasDense
 
-plt.plot(model.history.history["Accuracy"])
-plt.plot(model.history.history["val_Accuracy"])
-plt.show()
+# Disable Warning
+import os
+os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+keras_model = KerasSequential()
+keras_model.add(KerasDense(16, activation="relu", input_shape=(X.shape[1],)))
+keras_model.add(KerasDense(16, activation="relu"))
+keras_model.add(KerasDense(1, activation="sigmoid"))
+keras_model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+history = keras_model.fit(
+    X_train,
+    y_train,
+    epochs=150,
+    batch_size=len(X_train),
+    validation_data=(X_test, y_test),
+    verbose=0,
+)
+
+
+
+import skynet_ml
+from skynet_ml.nn.models.sequential import Sequential as SkynetSequential
+from skynet_ml.nn.layers import Dense as SkynetDense
+
+print("SKYNET")
+skynet_model = SkynetSequential()
+skynet_model.add(SkynetDense(16, activation="relu", input_dim=X.shape[1]))
+skynet_model.add(SkynetDense(16, activation="relu"))
+skynet_model.add(SkynetDense(1, activation="sigmoid"))
+skynet_model.compile(optimizer="adam", loss="bce", learning_rate=0.01)
+skynet_model.fit(
+    xtrain=X_train,
+    ytrain=y_train,
+    xval=X_test,
+    yval=y_test,
+    epochs=150,
+    batch_size=len(X_train),
+    metrics=["accuracy"]
+)
+print("skynet")
+print(skynet_model.evaluate(X_test, y_test))
+print("keras")
+print(keras_model.evaluate(X_test, y_test))
+print("grimoire")
+print(l, m)

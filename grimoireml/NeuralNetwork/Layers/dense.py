@@ -4,7 +4,9 @@ from grimoireml.NeuralNetwork.Initializers.initializer import Initializer
 from grimoireml.NeuralNetwork.Initializers.WeightInitializers.xavier_uniform import (
     XavierUniformWeight,
 )
-from grimoireml.NeuralNetwork.Initializers.WeightInitializers.he_uniform import HeUniformWeight
+from grimoireml.NeuralNetwork.Initializers.WeightInitializers.he_uniform import (
+    HeUniformWeight,
+)
 from grimoireml.NeuralNetwork.Initializers.BiasInitializers import ZerosBias
 
 
@@ -69,7 +71,6 @@ class Dense(Layer):
     def predict(self, input_data: np.ndarray) -> np.ndarray:
         """This is the representation of the predict method"""
         return self.forward(input_data)
-
 
     def __str__(self) -> str:
         return (
