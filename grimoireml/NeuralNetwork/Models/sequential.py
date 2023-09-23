@@ -36,28 +36,37 @@ class Sequential:
         self.layers = np.array(self.layers)
 
     def fit(
-        self,
-        X: np.ndarray,
-        y: np.ndarray,
-        epochs: int,
-        batch_size: int,
-        metrics: list = [],
-        validation_data: tuple = None,
-        verbose: bool = True,
+            self,
+            X: np.ndarray,
+            y: np.ndarray,
+            epochs: int,
+            batch_size: int,
+            metrics: list = [],
+            validation_data: tuple = None,
+            verbose: bool = True,
     ):
-
+        val_data_bool = validation_data is not None
+        self.history = History(metrics, val_data_bool)
         n_batches = len(X) // batch_size
 
         for epoch in range(epochs):
             epoch_start_time = timer()
             epoch_loss = 0
+            epoch_metrics = {str(metric): 0 for metric in self.history.metrics_list}
 
             for batch in range(0, n_batches, batch_size):
                 batch_X = X[batch: batch + batch_size]
                 batch_y = y[batch: batch + batch_size]
 
-                batch_loss, _ = self.train_on_batch(batch_X, batch_y)
+                batch_loss, batch_metrics = self.train_on_batch(batch_X, batch_y)
                 epoch_loss += batch_loss
+
+                for metric in batch_metrics:
+                    s = str(metric)
+                    epoch_metrics[s] += batch_metrics[s]
+
+            for metric in epoch_metrics:
+                epoch_metrics[metric] /= n_batches
 
             epoch_time = timer() - epoch_start_time
 
@@ -66,23 +75,33 @@ class Sequential:
             epoch_end_time = timer()
             epoch_time = epoch_end_time - epoch_start_time  # noqa: F841
 
-
             if verbose:
-                self.log_progress(epoch, epoch_loss, {}, epoch_time)
+                self.log_progress(epoch, epoch_loss, epoch_metrics, epoch_time)
+
+            self.history.history["loss"].append(epoch_loss)
+            for metric in epoch_metrics:
+                self.history.history[metric].append(epoch_metrics[metric])
+
+            if val_data_bool:
+                val_loss, val_metrics = self.evaluate_on_validation_data(validation_data[0], validation_data[1])
+                print("Validation Loss: ", val_loss / len(validation_data[0]))
+                self.history.history["val_loss"].append(val_loss)
+                for metric in val_metrics:
+                    self.history.history["val_" + str(metric)].append(val_metrics[metric])
 
     def train_on_batch(self, X: np.ndarray, y: np.ndarray):
         y_hat = self.forward_pass(X)
         loss = self.loss(y_hat, y)
 
-        l = np.sum(self.loss.derivative(y_hat, y), axis=1, keepdims=True)
-        self.backward_pass(l)
+        batch_loss_derivative = np.mean(self.loss.derivative(y_hat, y), axis=1, keepdims=True)
+        self.backward_pass(batch_loss_derivative)
         self.optimizer.update_params(self.layers)
 
-        # metrics = {
-        #     str(metric): metric(y_hat, y, adjust_y=True)
-        #     for metric in self.history.metrics_list
-        # }
-        return loss, {}
+        metrics = {
+            str(metric): metric(y_hat, y, adjust_y=True)
+            for metric in self.history.metrics_list
+        }
+        return loss, metrics
 
     def predict(self, X: np.ndarray):
         for layer in self.layers:
@@ -105,8 +124,15 @@ class Sequential:
     def evaluate(self):
         pass
 
-    def evaluate_on_training(self):
-        pass
+    def evaluate_on_validation_data(self, X: np.ndarray, y: np.ndarray):
+        y_hat = self.forward_pass(X)
+        loss = self.loss(y_hat, y)
+
+        metrics = {
+            str(metric): metric(y_hat, y, adjust_y=True)
+            for metric in self.history.metrics_list
+        }
+        return loss, metrics
 
     def log_progress(self, epoch_num, epoch_loss, epoch_metrics, epoch_time):
         print("Epoch: ", epoch_num + 1)

@@ -29,7 +29,7 @@ class Activation(Layer):
 
     def predict(self, input_data: np.ndarray) -> np.ndarray:
         """This method will be called when the object is called"""
-        return self.activation(input_data)
+        return self.forward(input_data)
 
     def __str__(self):
         pass

@@ -67,7 +67,8 @@ class Dense(Layer):
 
     def predict(self, input_data: np.ndarray) -> np.ndarray:
         """This is the representation of the predict method"""
-        self._forward(input_data)
+        return self.forward(input_data)
+
 
     def __str__(self) -> str:
         return (
