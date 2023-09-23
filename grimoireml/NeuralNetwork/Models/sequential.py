@@ -45,6 +45,7 @@ class Sequential:
             validation_data: tuple = None,
             verbose: bool = True,
     ):
+
         val_data_bool = validation_data is not None
         self.history = History(metrics, val_data_bool)
         n_batches = len(X) // batch_size
@@ -54,7 +55,7 @@ class Sequential:
             epoch_loss = 0
             epoch_metrics = {str(metric): 0 for metric in self.history.metrics_list}
 
-            for batch in range(0, n_batches, batch_size):
+            for batch in range(0, len(X), batch_size):
                 batch_X = X[batch: batch + batch_size]
                 batch_y = y[batch: batch + batch_size]
 
@@ -65,29 +66,31 @@ class Sequential:
                     s = str(metric)
                     epoch_metrics[s] += batch_metrics[s]
 
-            for metric in epoch_metrics:
-                epoch_metrics[metric] /= n_batches
+            # for metric in epoch_metrics:
+            #     epoch_metrics[metric] /= n_batches
 
             epoch_time = timer() - epoch_start_time
 
-            epoch_loss /= len(X)
+            epoch_loss /= n_batches
 
             epoch_end_time = timer()
             epoch_time = epoch_end_time - epoch_start_time  # noqa: F841
 
-            if verbose:
-                self.log_progress(epoch, epoch_loss, epoch_metrics, epoch_time)
-
             self.history.history["loss"].append(epoch_loss)
             for metric in epoch_metrics:
-                self.history.history[metric].append(epoch_metrics[metric])
+                self.history.history[metric].append(epoch_metrics[metric] / n_batches)
 
+            val_loss = None
+            val_metrics = None
             if val_data_bool:
                 val_loss, val_metrics = self.evaluate_on_validation_data(validation_data[0], validation_data[1])
-                print("Validation Loss: ", val_loss / len(validation_data[0]))
                 self.history.history["val_loss"].append(val_loss)
                 for metric in val_metrics:
                     self.history.history["val_" + str(metric)].append(val_metrics[metric])
+
+            if verbose:
+                self.log_progress(epoch, epoch_loss, epoch_metrics, epoch_time, val_loss, val_metrics)
+
 
     def train_on_batch(self, X: np.ndarray, y: np.ndarray):
         y_hat = self.forward_pass(X)
@@ -96,6 +99,7 @@ class Sequential:
         batch_loss_derivative = np.mean(self.loss.derivative(y_hat, y), axis=1, keepdims=True)
         self.backward_pass(batch_loss_derivative)
         self.optimizer.update_params(self.layers)
+
 
         metrics = {
             str(metric): metric(y_hat, y, adjust_y=True)
@@ -117,15 +121,12 @@ class Sequential:
         for layer in reversed(self.layers):
             X = layer.backward(X)
 
-    def update_weights(self):
-        for layer in self.layers:
-            self.optimizer.update(layer)
 
     def evaluate(self):
         pass
 
     def evaluate_on_validation_data(self, X: np.ndarray, y: np.ndarray):
-        y_hat = self.forward_pass(X)
+        y_hat = self.predict(X)
         loss = self.loss(y_hat, y)
 
         metrics = {
@@ -134,11 +135,19 @@ class Sequential:
         }
         return loss, metrics
 
-    def log_progress(self, epoch_num, epoch_loss, epoch_metrics, epoch_time):
+    def log_progress(self, epoch_num, epoch_loss, epoch_metrics, epoch_time, val_loss=None, val_metrics=None):
         print("Epoch: ", epoch_num + 1)
-        print(f"Epoch Loss: {epoch_loss:.6f}")
+        print(f"Epoch Loss: {epoch_loss:.6f}", end=" ")
         for metric in epoch_metrics:
-            print(f"Epoch {metric}: {epoch_metrics[metric]:.6f}")
+            print(f"Epoch {metric}: {epoch_metrics[metric]:.6f}", end=" ")
+
+        if val_loss is not None:
+            print()
+            print(f"Validation Loss: {val_loss:.6f}", end=" ")
+            for metric in val_metrics:
+                print(f"Validation {metric}: {val_metrics[metric]:.6f}", end=" ")
+
+        print()
         print(f"Epoch Time: {epoch_time:.6f}")
 
     def __str__(self) -> str:

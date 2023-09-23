@@ -4,6 +4,7 @@ from grimoireml.NeuralNetwork.Initializers.initializer import Initializer
 from grimoireml.NeuralNetwork.Initializers.WeightInitializers.xavier_uniform import (
     XavierUniformWeight,
 )
+from grimoireml.NeuralNetwork.Initializers.WeightInitializers.he_uniform import HeUniformWeight
 from grimoireml.NeuralNetwork.Initializers.BiasInitializers import ZerosBias
 
 
@@ -20,7 +21,7 @@ class Dense(Layer):
         """This is the constructor for the Dense class"""
 
         if weight_initializer is None:
-            self.weight_initializer = XavierUniformWeight()
+            self.weight_initializer = HeUniformWeight()
         else:
             self.weight_initializer = weight_initializer
         if bias_initializer is None:
